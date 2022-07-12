@@ -2,21 +2,21 @@ baseurl: https://blogofsh4llow.netlify.app/
 languageCode: zh-CN
 theme: hugo-theme-stack
 paginate: 5
-title: sh4lloW's blog
+title: sh4lloW's Blog
 
 # Change it to your Disqus shortname before using
 disqusShortname: hugo-theme-stack
 
 # GA Tracking ID
-googleAnalytics:
+#googleAnalytics:
 
 # Theme i18n support
-# Available values: ar, bn, ca, de, el, en, es, fr, hu, id, it, ja, ko, nl, pt-br, th, uk, zh-cn, zh-hk, zh-tw
-DefaultContentLanguage: zh-cn
+# Available values: en, fr, id, ja, ko, pt-br, zh-cn, zh-tw, es, de, nl, it, th, el, uk
+DefaultContentLanguage: zh-cn  
 
 # Set hasCJKLanguage to true if DefaultContentLanguage is in [zh-cn ja ko]
 # This will make .Summary and .WordCount behave correctly for CJK languages.
-hasCJKLanguage: false
+hasCJKLanguage: true
 
 permalinks:
     post: /p/:slug/
@@ -24,7 +24,7 @@ permalinks:
 
 params:
     mainSections:
-        - post
+        - about 
     featuredImageField: image
     rssFullContent: true
     favicon:
@@ -39,23 +39,23 @@ params:
 
     sidebar:
         emoji: 
-        subtitle: 其实主要是学习笔记
+        subtitle: personal blog
         avatar:
             enabled: true
             local: true
-            src: img/avatar.png
+            src: img/avatar.jpg
 
     article:
         math: false
         toc: true
         readingTime: true
         license:
-            enabled: true
+            enabled: false 
             default: Licensed under CC BY-NC-SA 4.0
 
     comments:
         enabled: false
-        provider: 
+        provider: disqus
 
         disqusjs:
             shortname:
@@ -82,32 +82,27 @@ params:
             clientSecret:
             autoCreateIssue: false
 
-        # Waline client configuration see: https://waline.js.org/en/reference/component.html
+        # Waline client configuration see: https://waline.js.org/en/reference/client.html
         waline:
             serverURL:
             lang:
-            pageview:
+            visitor:
+            avatar:
             emoji:
-                - https://unpkg.com/@waline/emojis@1.0.1/weibo
+                - https://cdn.jsdelivr.net/gh/walinejs/emojis/weibo
             requiredMeta:
                 - name
                 - email
                 - url
+            placeholder:
             locale:
                 admin: Admin
-                placeholder:
 
         twikoo:
             envId:
             region:
             path:
             lang:
-
-        # See https://cactus.chat/docs/reference/web-client/#configuration for description of the various options
-        cactus:
-            defaultHomeserverUrl: "https://matrix.cactus.chat:8448"
-            serverName: "cactus.chat"
-            siteName: "" # You must insert a unique identifier here matching the one you registered (See https://cactus.chat/docs/getting-started/quick-start/#register-your-site)
 
         giscus:
             repo:
@@ -121,42 +116,32 @@ params:
             emitMetadata: 0
 
         gitalk:
-            owner:
-            admin:
-            repo:
-            clientID:
-            clientSecret:
+            owner: 
+            admin:  
+            repo: 
+            clientID: 
+            clientSecret: 
 
         cusdis:
-            host:
-            id:
+            host: 
+            id: 
+
     widgets:
         enabled:
             - search
             - archives
             - tag-cloud
+
         archives:
             limit: 5
+
         tagCloud:
             limit: 10
-        homepage:
-            - type: search
-            - type: archives
-              params:
-                  limit: 5
-            - type: categories
-              params:
-                  limit: 10
-            - type: tag-cloud
-              params:
-                  limit: 10
-        page:
-            - type: toc
 
     opengraph:
         twitter:
             # Your Twitter username
-            site:Shaw_DNA
+            site:
 
             # Available values: summary, summary_large_image
             card: summary_large_image
@@ -183,21 +168,60 @@ params:
 ### Custom menu
 ### See https://docs.stack.jimmycai.com/configuration/custom-menu.html
 ### To remove about, archive and search page menu item, remove `menu` field from their FrontMatter
-menu:
-    main: []
+menu: 
+    main:
+        - identifier: home
+          name: 首页&关于
+          url: /
+          weight: -100 #权重
+          params:
+              ### For demonstration purpose, the home link will be open in a new tab
+              newTab: false
+              icon: home #更多的图标信息见后
+
+        - identifier: share
+          name: 资源信息分享
+          url: /share/ #链接，文件夹的相对位置即可。
+          weight: -90
+          params:
+              ### For demonstration purpose, the home link will be open in a new tab
+              newTab: false
+              icon: hash
+
+        - identifier: summary
+          name: 资源信息总结
+          url: /summary/
+          weight: -70
+          params:
+              ### For demonstration purpose, the home link will be open in a new tab
+              newTab: false
+              icon: hash
+
+        - identifier: note
+          name: 学习&笔记
+          url: /note/
+          weight: -80
+          params:
+              ### For demonstration purpose, the home link will be open in a new tab
+              newTab: false
+              icon: messages
+
+
+        - identifier: soft
+          name: 软件&网站
+          url: /soft/
+          weight: -60
+          params:
+              ### For demonstration purpose, the home link will be open in a new tab
+              newTab: false
+              icon: messages
 
     social:
         - identifier: github
           name: GitHub
           url: https://github.com/sh4lloW
           params:
-              icon: brand-github
-
-        - identifier: twitter
-          name: Twitter
-          url: https://twitter.com/Shaw_DNA
-          params:
-              icon: brand-twitter
+          icon: brand-github
 
 related:
     includeNewer: true
@@ -221,9 +245,3 @@ markup:
         startLevel: 2
     highlight:
         noClasses: false
-        codeFences: true
-        guessSyntax: true
-        lineNoStart: 1
-        lineNos: true
-        lineNumbersInTable: true
-        tabWidth: 4
