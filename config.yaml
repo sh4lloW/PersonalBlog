@@ -4,17 +4,6 @@ theme: hugo-theme-stack
 paginate: 5
 title: sh4lloW's Blog
 
-languages:
-    en:
-        languageName: English
-        title: sh4lloW's Blog
-        weight: 1
-    zh-cn:
-        languageName: 中文
-        title: sh4lloW的个人博客
-        weight: 2
-    
-
 # Change it to your Disqus shortname before using
 disqusShortname: hugo-theme-stack
 
