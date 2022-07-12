@@ -132,14 +132,14 @@ params:
             id:
     widgets:
         enabled:
-            - archives
+            - 档案
 
-        archives:
+        档案:
             limit: 5
             
         homepage:
             - type: search
-            - type: archives
+            - type: 档案
               params:
                   limit: 5
             - type: categories
