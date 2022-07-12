@@ -1,5 +1,5 @@
 baseurl: https://blogofsh4llow.netlify.app/
-languageCode: en-us
+languageCode: zh-CN
 theme: hugo-theme-stack
 paginate: 5
 title: sh4lloW's Blog
@@ -159,7 +159,7 @@ params:
     opengraph:
         twitter:
             # Your Twitter username
-            site:Shaw_DNA
+            site:
 
             # Available values: summary, summary_large_image
             card: summary_large_image
@@ -198,7 +198,7 @@ menu:
 
         - identifier: twitter
           name: Twitter
-          url: https://twitter.com
+          url: https://twitter.com/Shaw_DNA
           params:
               icon: brand-twitter
 
