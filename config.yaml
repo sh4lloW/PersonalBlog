@@ -1,19 +1,8 @@
 baseurl: https://blogofsh4llow.netlify.app/
-languageCode: en-us
+languageCode: zh-CN
 theme: hugo-theme-stack
 paginate: 5
-title: sh4lloWBlog
-
-languages:
-    en:
-        languageName: English
-        title: sh4lloW's Blog
-        weight: 1
-    zh-cn:
-        languageName: 中文
-        title: sh4lloW的个人博客
-        weight: 2
-    
+title: sh4lloW's Blog
 
 # Change it to your Disqus shortname before using
 disqusShortname: hugo-theme-stack
@@ -49,8 +38,8 @@ params:
         lastUpdated: Jan 02, 2006 15:04 MST
 
     sidebar:
-        emoji: 🍥
-        subtitle: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        emoji:
+        subtitle: personal blog
         avatar:
             enabled: true
             local: true
@@ -65,7 +54,7 @@ params:
             default: Licensed under CC BY-NC-SA 4.0
 
     comments:
-        enabled: true
+        enabled: false
         provider: disqus
 
         disqusjs:
@@ -142,6 +131,17 @@ params:
             host:
             id:
     widgets:
+        enabled:
+            - search
+            - archives
+            - tag-cloud
+
+        archives:
+            limit: 5
+
+        tagCloud:
+            limit: 10
+            
         homepage:
             - type: search
             - type: archives
@@ -159,7 +159,7 @@ params:
     opengraph:
         twitter:
             # Your Twitter username
-            site:Shaw_DNA
+            site:
 
             # Available values: summary, summary_large_image
             card: summary_large_image
@@ -187,8 +187,15 @@ params:
 ### See https://docs.stack.jimmycai.com/configuration/custom-menu.html
 ### To remove about, archive and search page menu item, remove `menu` field from their FrontMatter
 menu:
-    main: []
-
+    main: 
+        - identifier: home
+          name: 首页
+          url: /
+          weight: -100
+          params:
+            icon: home
+            newTab: false
+            
     social:
         - identifier: github
           name: GitHub
@@ -201,7 +208,7 @@ menu:
           url: https://twitter.com
           params:
               icon: brand-twitter
-
+                
 related:
     includeNewer: true
     threshold: 60
