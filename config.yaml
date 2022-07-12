@@ -141,6 +141,7 @@ params:
 
         tagCloud:
             limit: 10
+            
         homepage:
             - type: search
             - type: archives
@@ -186,7 +187,14 @@ params:
 ### See https://docs.stack.jimmycai.com/configuration/custom-menu.html
 ### To remove about, archive and search page menu item, remove `menu` field from their FrontMatter
 menu:
-    main: []
+    main:
+    - identifier: home
+          name: Home
+          url: /
+          weight: -100
+          params:
+            icon: home
+            newTab: true
 
     social:
         - identifier: github
