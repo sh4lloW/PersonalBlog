@@ -1,23 +1,19 @@
-baseurl: https://example.com
+baseurl: https://blogofsh4llow.netlify.app/
 languageCode: en-us
 theme: hugo-theme-stack
 paginate: 5
-title: Example Site
+title: sh4lloWBlog
 
 languages:
     en:
         languageName: English
-        title: Example Site
+        title: sh4lloW's Blog
         weight: 1
     zh-cn:
         languageName: 中文
-        title: 演示站点
+        title: sh4lloW的个人博客
         weight: 2
-    ar:
-        languageName: عربي
-        languagedirection: rtl
-        title: موقع تجريبي
-        weight: 3
+    
 
 # Change it to your Disqus shortname before using
 disqusShortname: hugo-theme-stack
@@ -27,7 +23,7 @@ googleAnalytics:
 
 # Theme i18n support
 # Available values: ar, bn, ca, de, el, en, es, fr, hu, id, it, ja, ko, nl, pt-br, th, uk, zh-cn, zh-hk, zh-tw
-DefaultContentLanguage: en
+DefaultContentLanguage: zh-cn
 
 # Set hasCJKLanguage to true if DefaultContentLanguage is in [zh-cn ja ko]
 # This will make .Summary and .WordCount behave correctly for CJK languages.
@@ -163,7 +159,7 @@ params:
     opengraph:
         twitter:
             # Your Twitter username
-            site:
+            site:Shaw_DNA
 
             # Available values: summary, summary_large_image
             card: summary_large_image
@@ -196,7 +192,7 @@ menu:
     social:
         - identifier: github
           name: GitHub
-          url: https://github.com/CaiJimmy/hugo-theme-stack
+          url: https://github.com/sh4lloW
           params:
               icon: brand-github
 
