@@ -184,7 +184,7 @@ params:
 menu:
     main: 
         - identifier: home
-          name: 首页
+          name: Home
           url: /
           weight: -100
           params:
