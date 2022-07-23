@@ -119,4 +119,4 @@ java.io.InvalidClassException: Person; local class incompatible: stream classdes
 	at Main.main(Main.java:8)
 ```
 \
-&emsp;&emsp;
+&emsp;&emsp;另外，**static属性不能被序列化。**
