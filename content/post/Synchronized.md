@@ -11,7 +11,7 @@ draft: false
 
 ## 一个例子
 &emsp;&emsp;先给出一个样例：
-```
+```java
     private static int value = 0;
     public static void main(String[] args) throws InterruptedException{
         Thread t1 = new Thread(() -> {
@@ -53,7 +53,7 @@ thread 2 end!
 
 ## 线程锁
 &emsp;&emsp;在Java中，通过synchronized关键字来创建一个线程锁，它需要在括号中填入一个对象或是一个类，现在在value自增操作外套上synchronized代码块：
-```
+```java
     private static int value = 0;
     public static void main(String[] args) throws InterruptedException{
         Thread t1 = new Thread(() -> {
@@ -92,7 +92,7 @@ thread 1 end!
 &emsp;&emsp;当一个线程进入到同步代码块时，会获取到当前的锁，而这时如果其他使用同样的锁的同步代码块也想执行内容，就必须等待当前同步代码块的内容执行完毕，执行完毕后会自动释放这把锁，而其他的线程才能拿到这把锁并开始执行同步代码块里面的内容。\
 \
 &emsp;&emsp;synchronized关键字也可以作用于方法上，当调用此方法时也会获取锁：
-```
+```java
     private static int value = 0;
     private static synchronized void add()  //锁作用于方法上
     {
@@ -127,7 +127,7 @@ thread 1 end!
 ![图片](https://s1.328888.xyz/2022/07/24/md19h.png#pic_center)\
 &emsp;&emsp;可以看到线程A与线程B被无限期阻塞，因此程序不可能正常终止。\
 &emsp;&emsp;我们试运行下面的代码：
-```
+```java
     public static void main(String[] args) throws InterruptedException {
         Object o1 = new Object();
         Object o2 = new Object();

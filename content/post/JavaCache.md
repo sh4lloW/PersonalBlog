@@ -10,11 +10,11 @@ draft: false
 ---
 
 JAVA可以依靠自动装箱与拆箱机制实现赋值创建对象，如：
-```
+```java
 Integer i = 1
 ```
 当出现如下代码时：
-```
+```java
 Integer i1 = 127;
 Integer i2 = 127;
 Integer i3 = 128;
@@ -30,14 +30,14 @@ false
 false
 ```
 当打开Integer包装类的源码时，我们可以看到：
-```
+```java
 public static Integer valueOf(int i) {
         if (i >= IntegerCache.low && i <= IntegerCache.high)
             return IntegerCache.cache[i + (-IntegerCache.low)];
         return new Integer(i);
     }
 ```
-```
+```java
     private static class IntegerCache {
         static final int low = -128;
         static final int high;

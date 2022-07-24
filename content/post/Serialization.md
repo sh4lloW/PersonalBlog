@@ -14,7 +14,7 @@ draft: false
 \
 &emsp;&emsp;在Java当中，实现序列化的方式十分简单，只需要实现Serializable接口就可以了，
 比如说：
-```
+```java
 class Person implements Serializable{
     String name;
     String id;
@@ -30,7 +30,7 @@ class Person implements Serializable{
 }
 ```
 &emsp;&emsp;现在利用**对象流**对Person这个对象进行序列化与其对应二进制数据进行反序列化。
-```
+```java
     public static void main(String[] args) {
         serialize();
         deserialize();
@@ -68,7 +68,7 @@ name:kuma	id:100101
 \
 &emsp;&emsp;在许多JDK的内部源码中，可以看到其中存在大量的**transient**关键字，它的作用就是标识这些属性不参与序列化，可以节省数据空间的占用并减少整体序列化的时间。\
 &emsp;&emsp;如果我们对上面Person对象的变量name添加transient关键字：
-```
+```java
 class Person implements Serializable{
     transient String name;
     public Person(String name, String id)
@@ -91,7 +91,7 @@ name:null
 &emsp;&emsp;虽然得到了对象Person，但其中name并没有被序列化，所以没有被保存，结果为null。\
 \
 &emsp;&emsp;值得注意的是，实现了Serializable接口的类都会有一个版本号，**若没有指定版本号则JDK会根据对象的属性自动生成对应的版本号**，当然我们可以给其定义序列化版本号：
-```
+```java
 class Person implements Serializable{
     private static final long serialVersionUID = 9527;  //定义版本号
     String name;
