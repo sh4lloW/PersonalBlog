@@ -141,3 +141,10 @@ public static void main(String[] args) {
     }
 }
 ```
+&emsp;&emsp;使用PreparedStatement类需要提前给一个SQL语句，并用`?`占位符，这样让我们填写的数据来替代里面的内容。\
+&emsp;&emsp;如果使用这种方法，之前的方法就失效了，因为输入的SQL语句变为：
+```SQL
+SELECT * FROM user WHERE username='user1'AND password='wrongpwd'' or 1=1; -- ';
+```
+&emsp;&emsp;这样的方式可以较为有效的防止SQL注入攻击。\
+&emsp;&emsp;当然还可以通过正则表达式和字符串过滤等方式，这里不再列举。
