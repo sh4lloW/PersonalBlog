@@ -15,36 +15,36 @@ draft: false
 ## 连接数据库
 ```java
 public static void main(String[] args) {
-        //前两步需要释放资源，故放在try()中
-        try(Connection connection = DriverManager.getConnection("URL","user","password");   //通过DriverManager来实现与数据库的连接
-            Statement statement = connection.createStatement())     //Statement对象用于执行SQL指令
+    //前两步需要释放资源，故放在try()中
+    try(Connection connection = DriverManager.getConnection("URL","user","password");   //通过DriverManager来实现与数据库的连接
+        Statement statement = connection.createStatement())     //Statement对象用于执行SQL指令
+    {
+        ResultSet set = statement.executeQuery("SELECT * FROM Student");    //执行查询指令，得到结果集
+        while(set.next())
         {
-            ResultSet set = statement.executeQuery("SELECT * FROM Student");    //执行查询指令，得到结果集
-            while(set.next())
-            {
-                System.out.println(set.getString(1));   //输出第一列
-            }
-        }catch(SQLException e)
-        {
-            e.printStackTrace();
+            System.out.println(set.getString(1));   //输出第一列
         }
+    }catch(SQLException e)
+    {
+        e.printStackTrace();
     }
+}
 ```
 &emsp;&emsp;其中，DriverManager类是用来管理数据库驱动的，它可以调用`getConnection()`方法来进行数据库的链接：
 ```java
 public static Connection getConnection(String url,
-        String user, String password) throws SQLException {
-        java.util.Properties info = new java.util.Properties();
+    String user, String password) throws SQLException {
+    java.util.Properties info = new java.util.Properties();
 
-        if (user != null) {
-            info.put("user", user);
-        }
-        if (password != null) {
-            info.put("password", password);
-        }
-
-        return (getConnection(url, info, Reflection.getCallerClass()));
+    if (user != null) {
+        info.put("user", user);
     }
+    if (password != null) {
+        info.put("password", password);
+    }
+
+    return (getConnection(url, info, Reflection.getCallerClass()));
+}
 ```
 
 ## 利用Statement执行SQL语句
@@ -73,18 +73,18 @@ while(set.next())   //打印查询结果
 ### 批量操作
 ```java
 public static void main(String[] args) {
-        try(Connection connection = DriverManager.getConnection("URL","user","password");
-            Statement statement = connection.createStatement())
-        {
-            statement.addBatch("INSERT INTO Student VALUES(5,'C');");
-            statement.addBatch("INSERT INTO Student VALUES(6,'D');");
-            statement.addBatch("INSERT INTO Student VALUES(7,'E');");
-            statement.executeBatch();   //统一执行
-        }catch(SQLException e)
-        {
-            e.printStackTrace();
-        }
+    try(Connection connection = DriverManager.getConnection("URL","user","password");
+        Statement statement = connection.createStatement())
+    {
+        statement.addBatch("INSERT INTO Student VALUES(5,'C');");
+        statement.addBatch("INSERT INTO Student VALUES(6,'D');");
+        statement.addBatch("INSERT INTO Student VALUES(7,'E');");
+        statement.executeBatch();   //统一执行
+    }catch(SQLException e)
+    {
+        e.printStackTrace();
     }
+}
 ```
 
 ## SQL注入攻击
@@ -124,7 +124,7 @@ SELECT * FROM user WHERE username='user1'AND password='wrongpwd' or 1=1; --';
 &emsp;&emsp;PreparedStatement类可以解决上述问题：
 ```java
 public static void main(String[] args) {
-    try(Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/test","root","zzydatabase3141");
+    try(Connection connection = DriverManager.getConnection("URL","user","password");
         PreparedStatement statement = connection.prepareStatement("SELECT * FROM user WHERE username= ? and pwd=?;");
         Scanner scanner = new Scanner(System.in))
     {
@@ -148,3 +148,23 @@ SELECT * FROM user WHERE username='user1'AND password='wrongpwd'' or 1=1; -- ';
 ```
 &emsp;&emsp;这样的方式可以较为有效的防止SQL注入攻击。\
 &emsp;&emsp;当然还可以通过正则表达式和字符串过滤等方式，这里不再列举。
+
+## 事务的管理
+&emsp;&emsp;JDBC默认的事务处理机制为自动提交，所以前面执行一个SQL语句就会被直接提交，相当于没有启动事务，如果想要实现事务的管理，需要通过Connection类中的`setAutoCommit(false)`方法，将SQL语句的提交由驱动程序交给应用程序控制：
+```java
+public static void main(String[] args) {
+    try(Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/test","root","zzydatabase3141");
+        Statement statement = connection.createStatement())
+    {
+        connection.setAutoCommit(false);    //关闭自动提交
+        statement.executeUpdate("INSERT INTO Student VALUES(10,'QWER')");
+        statement.executeUpdate("INSERT INTO Student VALUES(11,'ASDF')");
+        statement.executeUpdate("INSERT INTO Student VALUES(12,'ZXCV')");
+        connection.commit();
+    }catch(SQLException e)
+    {
+        e.printStackTrace();
+    }
+}
+```
+同理，也可以通过这样进行回滚与断点等操作。
