@@ -276,3 +276,45 @@ class CQueue {
  * int param_2 = obj.deleteHead();
  */
 ```
+
+### 10.I.斐波那契数列
+&emsp;&emsp;[10.I.斐波那契数列](https://leetcode.cn/problems/fei-bo-na-qi-shu-lie-lcof/)&emsp;难度：easy\
+&emsp;&emsp;看到通过率这么低就感觉有些不对劲，十秒钟写了个递归交了上去：
+```java
+class Solution {
+    public int fib(int n) {
+        if(n == 0 || n ==1)
+        {
+            return n;
+        }
+        return fib(n-1) + fib(n-2)%1000000007;
+    }
+}
+```
+&emsp;&emsp;不出意外TLE了，于是改换DP：
+```java
+class Solution {
+    public int fib(int n) {
+        if(n == 0 || n == 1)
+        {
+            return n;
+        }
+        int[] dp = new int[n+1];
+        dp[0] = 0;
+        dp[1] = 1;
+        for(int i=2;i<=n;i++)
+        {
+            dp[i] = dp[i-1] + dp[i-2];
+            dp[i] %= 1000000007;
+        }
+        return dp[n];
+    }
+}
+```
+&emsp;&emsp;原本在返回值时进行模运算，结果在某个数据那溢出了，评论区说是要在每次求和时就进行模运算，不得不说Leetcode的题面有时候是真的坑人...\
+&emsp;&emsp;其实在运算过程中只用到了dp[i-1]和dp[i-2]两个值，这里可以用两个整型变量取代，不必建立长度n+1的数组，取代以后空间复杂度可以从O(N)降为O(1)。
+
+### 10.II.青蛙跳台阶问题
+&emsp;&emsp;[10.II.青蛙跳台阶问题](https://leetcode.cn/problems/qing-wa-tiao-tai-jie-wen-ti-lcof/)&emsp;难度：easy\
+&emsp;&emsp;经典的DP问题，实际也就是斐波那契数列问题，解法与上题一致。\
+&emsp;&emsp;但值得注意的是这题默认fib(0)没有意义，在0阶台阶时也会有一种解法，所以dp[0]=1。
