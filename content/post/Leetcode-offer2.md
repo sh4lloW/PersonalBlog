@@ -283,7 +283,7 @@ class CQueue {
 ```java
 class Solution {
     public int fib(int n) {
-        if(n == 0 || n ==1)
+        if(n == 0 || n == 1)
         {
             return n;
         }
@@ -318,3 +318,43 @@ class Solution {
 &emsp;&emsp;[10.II.青蛙跳台阶问题](https://leetcode.cn/problems/qing-wa-tiao-tai-jie-wen-ti-lcof/)&emsp;难度：easy\
 &emsp;&emsp;经典的DP问题，实际也就是斐波那契数列问题，解法与上题一致。\
 &emsp;&emsp;但值得注意的是这题默认fib(0)没有意义，在0阶台阶时也会有一种解法，所以dp[0]=1。
+
+### 11.旋转数组的最小数字
+&emsp;&emsp;[11.旋转数组的最小数字](https://leetcode.cn/problems/xuan-zhuan-shu-zu-de-zui-xiao-shu-zi-lcof/)&emsp;难度：easy\
+&emsp;&emsp;**部分有序的数组考察的就是二分查找。**\
+&emsp;&emsp;可以把原先的数组看成两个递增数组组合而成，如果中间点小于最右边，说明此时位于右边递增数组，就搜索中间点左边；如果中间点大于最右边，说明此时位于左边递增数组，就搜索中间点右边；如果中间点与右边相等，无法判断，可以直接进行遍历。
+```java
+class Solution {
+    public int minArray(int[] numbers) {
+        int left = 0;
+        int right = numbers.length-1;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            /*
+            为什么用left + (right - left) / 2而不是(left + right) / 2，
+            是因为如果数组很大时(left + right)会爆int
+            */
+            if (numbers[mid] < numbers[right]) {
+                right = mid;
+            } else if (numbers[mid] > numbers[right]) {
+                left = mid + 1;
+            } else {
+                right --;
+                /*
+                right --用于缩减范围，实际上和遍历的时间复杂度是一样的，用下面的会更加直观：
+
+                int min = left;
+                for(int i = left + 1; i < right; i++) {
+                    if (numbers[i] < numbers[min]) {
+                        min = i;
+                    }
+                }
+                return numbers[min];
+                */
+            }
+        }
+        return numbers[left];
+    }
+}
+```
+&emsp;&emsp;相比于直接暴力遍历，二分法可将时间复杂度由O(N)降为O(logN)。
