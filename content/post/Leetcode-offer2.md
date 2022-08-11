@@ -358,3 +358,52 @@ class Solution {
 }
 ```
 &emsp;&emsp;相比于直接暴力遍历，二分法可将时间复杂度由O(N)降为O(logN)。
+
+### 12.矩阵中的路径
+&emsp;&emsp;[12.矩阵中的路径](https://leetcode.cn/problems/ju-zhen-zhong-de-lu-jing-lcof/)&emsp;难度：medium\
+&emsp;&emsp;DFS的模板题，这里用DFS+回溯的方法，需要一个二维数组visited用于判断是否走过，一个一维数组便于遍历字符串。\
+&emsp;&emsp;在DFS中，递归结束的条件：
+* false : 搜索超出边界、该点已经走过、当前点与目标字符不符
+* true : 字符串匹配完
+```java
+class Solution {
+    public boolean exist(char[][] board, String word) {
+        if (word.length() == 0) {
+            return true;
+        }
+        boolean[][] visited = new boolean[board.length][board[0].length];
+        char[] charsofword = word.toCharArray();
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0;j < board[0].length; j++) {
+                /*
+                遍历矩阵，使其可以从任意一个点开始搜索找到匹配的字符串
+                如果某个点开始的dfs查找成功则直接返回true
+                */
+                if (dfs(board, charsofword, visited, 0, i, j)) {
+                    return true;
+                }
+            }
+        }
+        return false; // 所有点开始都找不到匹配的字符串
+    }
+    private boolean dfs(char[][] board, char[] charsofword, boolean[][] visited, int index, int i, int j) {
+        //index用于标记当前字符串的下标，从0开始
+        if (i < 0 || i > board.length - 1 || j < 0 || j > board[0].length - 1 || // 超出边界
+            visited[i][j] == true || // 该点已走过
+            charsofword[index] != board[i][j]) { // 与字符串不匹配
+            return false;
+        }
+        if (index == charsofword.length - 1) { // 当字符串匹配完说明符合
+            return true;
+        }
+        visited[i][j] = true; // 标记当前点已走过
+        boolean res = dfs(board, charsofword, visited, index + 1, i + 1, j)
+                    || dfs(board, charsofword, visited, index + 1, i - 1, j)
+                    || dfs(board, charsofword, visited, index + 1, i, j + 1)
+                    || dfs(board, charsofword, visited, index + 1, i, j - 1);
+                    // 往四个方向搜索
+        visited[i][j] = false; // 回溯，将visited置为false
+        return res;
+    }
+}
+```
