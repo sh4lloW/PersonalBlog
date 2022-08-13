@@ -208,7 +208,7 @@ class Solution {
     }
 }
 ```
-&emsp;&emsp;后来在评论区看到了@Krahets的解法，利用哈希表可以达到O(N)的时空复杂度：
+&emsp;&emsp;后来在评论区看到了@Krahets的解法，利用哈希表可以达到$O(N)$时空复杂度：
 ```java
 class Solution {
     int[] preorder;     //保留的先序遍历
@@ -235,7 +235,7 @@ class Solution {
     }
 }
 ```
-&emsp;&emsp;在这个算法中，最花费的时间的操作是哈希表的初始化，为O(N)，而递归建立结点与定位的时间仅为O(1)，故这是一个O(N)的算法。
+&emsp;&emsp;在这个算法中，最花费的时间的操作是哈希表的初始化，为$O(N)$，而递归建立结点与定位的时间仅为$O(1)$，故这是一个$O(N)$的算法。
 
 ### 09.用两个栈实现队列
 &emsp;&emsp;[09.用两个栈实现队列](https://leetcode.cn/problems/yong-liang-ge-zhan-shi-xian-dui-lie-lcof/)&emsp;难度：easy\
@@ -312,7 +312,7 @@ class Solution {
 }
 ```
 &emsp;&emsp;原本在返回值时进行模运算，结果在某个数据那溢出了，评论区说是要在每次求和时就进行模运算，不得不说Leetcode的题面有时候是真的坑人...\
-&emsp;&emsp;其实在运算过程中只用到了dp[i-1]和dp[i-2]两个值，这里可以用两个整型变量取代，不必建立长度n+1的数组，取代以后空间复杂度可以从O(N)降为O(1)。
+&emsp;&emsp;其实在运算过程中只用到了dp[i-1]和dp[i-2]两个值，这里可以用两个整型变量取代，不必建立长度n+1的数组，取代以后空间复杂度可以从$O(N)$降为$O(1)$。
 
 ### 10.II.青蛙跳台阶问题
 &emsp;&emsp;[10.II.青蛙跳台阶问题](https://leetcode.cn/problems/qing-wa-tiao-tai-jie-wen-ti-lcof/)&emsp;难度：easy\
@@ -357,7 +357,7 @@ class Solution {
     }
 }
 ```
-&emsp;&emsp;相比于直接暴力遍历，二分法可将时间复杂度由O(N)降为O(logN)。
+&emsp;&emsp;相比于直接暴力遍历，二分法可将时间复杂度由$O(N)$降为$O(logN)$。
 
 ### 12.矩阵中的路径
 &emsp;&emsp;[12.矩阵中的路径](https://leetcode.cn/problems/ju-zhen-zhong-de-lu-jing-lcof/)&emsp;难度：medium\
@@ -407,3 +407,118 @@ class Solution {
     }
 }
 ```
+
+### 14.I.剪绳子
+&emsp;&emsp;[14.I.剪绳子](https://leetcode.cn/problems/jian-sheng-zi-lcof/)&emsp;难度：medium\
+&emsp;&emsp;碰到求最优解的问题第一反应是动态规划：
+* 对于长度为n的绳子剪掉后的最大乘积，可以通过前面比n小的绳子转化一部分过来
+* 设剪掉的第一段长度为`j`，剪掉的长度至少为2，因为剪掉的长度为1对乘积没有改变，所以在内嵌循环中从2开始
+* 第一次剪掉以后，需要对剩下的绳子进行处理，如果不剪剩下的绳子，则乘积为`j * (i - j)`，如果剪，乘积为`j * dp[i - j]`，两者取最大值，`max(j * (i - j), j * dp[i - j])`
+* 针对每次剪掉的第一段的长度不同，当前绳子的最大乘积`dp[i]`会不断变化，所以也需要对`dp[i]`进行更新
+```java
+class Solution {
+    public int cuttingRope(int n) {
+        int[] dp = new int[n+1];
+        dp[0] = dp[1] = 0;
+        dp[2] = 1;
+        for (int i = 3; i <= n; i++) {
+            for (int j = 2; j < i; j++) { //每次选取剪第一段的长度
+                int temp = Math.max(j * (i - j), j * dp[i - j]);
+                dp[i] = Math.max(dp[i], temp);
+            }
+        }
+        return dp[n];
+    }
+}
+```
+&emsp;&emsp;题解区有关于贪心的解法，有涉及到关于数论的知识：
+* 根据奇偶证明，任何大于1的数可以由2和3相加而成
+* `2*2=1*4`，`2*3>1*5`，所以将数字拆解成2和3，得到的乘积最大
+* `2*2*2<3*3`，3越多，乘积越大
+```java
+class Solution {
+    public int cuttingRope(int n) {
+        if (n < 4) {
+            return n - 1; 
+        }
+        int productofthree = 1;
+        while (n > 4) {
+            productofthree *= 3;
+            n -= 3;
+        }
+        return productofthree * n; //最后n会小于等于4，将3的乘积乘于最后的n就是绳子的乘积
+    }
+}
+```
+&emsp;&emsp;用贪心的话时间复杂度可由$O(N^2)$降为$O(N)$，并且由于不用dp数组，空间复杂度由$O(N)$降为$O(1)$。
+
+### 14.II.剪绳子II
+&emsp;&emsp;[14.II.剪绳子II](https://leetcode.cn/problems/jian-sheng-zi-ii-lcof/)&emsp;难度：medium\
+&emsp;&emsp;这题与上题题面一致，唯一不同的就是加大了n的测试范围，使得上面的代码会溢出，而DP的解法使得取余以后max函数不能比较大小，所以这里对贪心的解法进行取余：
+```java
+class Solution {
+    public int cuttingRope(int n) {
+        if (n < 4) {
+            return n - 1; 
+        }
+        long productofthree = 1;
+        while (n > 4) {
+            productofthree *= 3;
+            productofthree %= 1000000007;
+            n -= 3;
+        }
+        return (int)(productofthree * n % 1000000007);
+    }
+}
+```
+&emsp;&emsp;当然DP如果换成BigInteger也是可以用的，不过效率很低。
+
+### 15.二进制中1的个数
+&emsp;&emsp;[15.二进制中1的个数](https://leetcode.cn/problems/er-jin-zhi-zhong-1de-ge-shu-lcof/)&emsp;难度：easy\
+&emsp;&emsp;我是铸币，只会位运算，但相比转成字符串再数还是没那么铸币：
+```java
+public class Solution {
+    // you need to treat n as an unsigned value
+    public int hammingWeight(int n) {
+        int cnt = 0;
+        for (int i = 0; i < 32; i++) {
+            if ((n & 1) == 1) {
+                cnt++;
+            }
+            n >>= 1;
+        }
+        return cnt;
+    }
+}
+```
+
+### 16.数值的整数次方
+&emsp;&emsp;[16.数值的整数次方](https://leetcode.cn/problems/shu-zhi-de-zheng-shu-ci-fang-lcof/)&emsp;难度：medium\
+&emsp;&emsp;快速幂算法模板题：
+* $x^n$ = $(x^2)^\frac{n}{2}$
+* 对于这种形式有两种情况：
+* $n$为偶数，$x^n$ = $(x^2)^{\lfloor\frac{n}{2}\rfloor}$
+* $n$为奇数，$x^n$ = $x(x^2)^{\lfloor\frac{n}{2}\rfloor}$\
+```java
+class Solution {
+    public double myPow(double x, int n) {
+        if (n == 0) {
+            return 1.0;
+        }
+        if (n < 0) { // 负数次方的处理
+            x = 1 / x;
+            n = -n;
+        }
+        double res = 1;
+        while (n != 0) {
+            if (n % 2 != 0) { // n为奇数就多乘一次x，因为最后n肯定会为1所以始终会赋值给res
+                res *= x;
+            }
+            x *= x;
+            n /= 2; // 位运算会快一些，但这题如果不变数据类型用位运算的话会卡用例
+        }
+        return res;
+    }
+}
+```
+&emsp;&emsp;本质是二分法，所以时间复杂度为$O(logN)$。
