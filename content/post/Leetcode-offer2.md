@@ -522,3 +522,55 @@ class Solution {
 }
 ```
 &emsp;&emsp;本质是二分法，所以时间复杂度为$O(logN)$。
+
+### 17.打印从1到最大的n位数
+&emsp;&emsp;[17.打印从1到最大的n位数](https://leetcode.cn/problems/da-yin-cong-1dao-zui-da-de-nwei-shu-lcof/)&emsp;难度：easy\
+&emsp;&emsp;应该感叹一下终于有送分题了：
+```java
+class Solution {
+    public int[] printNumbers(int n) {
+        int[] list = new int[((int)Math.pow(10,n)) - 1];
+        for (int i = 0; i <list.length; i++) {
+            list[i] =i + 1;
+        }
+        return list;
+    }
+}
+```
+
+### 18.删除链表的结点
+&emsp;&emsp;[18.删除链表的结点](https://leetcode.cn/problems/shan-chu-lian-biao-de-jie-dian-lcof/)&emsp;难度：easy\
+&emsp;&emsp;双指针法：\
+![图片](https://s1.328888.xyz/2022/08/14/TsqLI.png)
+```java
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public ListNode deleteNode(ListNode head, int val) {
+        if (head == null) { // 链表为空
+            return null;
+        }
+        if (head.val == val) { // 头节点就是要删除的点
+            return head.next;
+        }
+        ListNode cur = head.next;
+        ListNode pre = head;
+        while (cur.val != val) { // 遍历链表找到要删除的点
+            if(cur.next != null) {
+                pre = cur;
+                cur = cur.next;
+            }
+        }
+        pre.next = cur.next; // 删除结点
+        return head;
+    }
+}
+```
+&emsp;&emsp;值的注意的是，这里只返回了链表头结点，实际被删除的点本身并没有释放，指针也没有删除。
+
