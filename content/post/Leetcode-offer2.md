@@ -574,3 +574,76 @@ class Solution {
 ```
 &emsp;&emsp;值的注意的是，这里只返回了链表头结点，实际被删除的点本身并没有释放，指针也没有删除。
 
+### 20.表示数值的字符串
+
+​		[20.表示数值的字符串](https://leetcode.cn/problems/biao-shi-shu-zhi-de-zi-fu-chuan-lcof/)	难度：medium
+
+​		一道有限自动机，其实编译原理学的挺好的，真写代码有点抓瞎，一开始用哈希表频繁出错，debug了半天，看了题解才发现自动机少画了加减号的特殊情况。
+
+​		在评论区发现了新解法，同样是自动机的思路，不过通过三个boolean变量然后遍历字符串就可以了，相比较来说反而是更容易想到也更简单的思路，但学完编译原理以后反而忽略了这种。
+
+```java
+class Solution {
+    public boolean isNumber(String s) {
+        if (s.length() == 0) {
+            return false;
+        }
+        s = s.trim();	// 去除字符串前后的空格
+        boolean num = false;	// 数字
+        boolean point = false;	// 小数点
+        boolean e = false;	// e或E
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c >= '0' && c <= '9') {	// 遇到数字
+                num = true;
+            }else if (c == '.' && !point && !e){	// 遇到小数点的前提是小数点只出现过一次小数点且没有e
+                point = true;
+            }else if ((c == 'e' || c == 'E') && !e && num) {	// 遇到e的前提是e只出现过一次且数字在e前面出现过
+                e = true;
+                num = false;	// e后面要跟数字，一旦出现把num置为false，防止1e这种情况出现
+            }else if ((c == '+' || c == '-') && (i == 0 || s.charAt(i-1) == 'e' || s.charAt(i-1) == 'E')) {
+                // 遇到加减号的情况，加减号只能出现在字符串开头(i == 0)或e的后面，一开始就是没考虑过这种情况导致6+1这种样例出错
+                // do nothing
+            }else {
+                return false;
+            }
+        }
+        return num;
+    }
+}
+```
+
+​		被各种样例卡了好久，难度是medium但恶心程度犹胜hard，只能说面试时敢出这种我就敢挂，实在不行也只能在面试官面前画自动机 :)
+
+### 21.调整数组顺序使奇数位于偶数前面
+
+​		[21.调整数组顺序使奇数位于偶数前面](https://leetcode.cn/problems/diao-zheng-shu-zu-shun-xu-shi-qi-shu-wei-yu-ou-shu-qian-mian-lcof/)	难度：easy
+
+​		泪目了，罗勇上课讲过的案例真实出现在剑指offer上面，到现在都感谢学校里的数据结构课。
+
+​		运用快排的思想，唯一需要注意的是`left`和`right`是在变动的，所以在循环中每次也要判断`left < right`。
+
+```java
+class Solution {
+    public int[] exchange(int[] nums) {
+        int left = 0;
+        int right = nums.length - 1;
+        while (left < right) {
+            while ((left < right) && nums[left] % 2 != 0) {	// 奇数在数组左边，所以遇到奇数就跳过
+                left++;										// 如果用位运算会更快点
+            }
+            while ((left < right) && nums[right] % 2 == 0) { // 同理
+                right--;
+            }
+            int temp = nums[left];
+            nums[left] = nums[right];
+            nums[right] = temp;
+        }
+        return nums;
+    }
+}
+```
+
+
+
+​		
