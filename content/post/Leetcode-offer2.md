@@ -10,9 +10,10 @@ draft: false
 
 &emsp;&emsp;上次刷算法题都是大一下学期的事情了，想起来整个大一都在用C语言写各种简单算法题的日子，那个时候写个栈都要自己手动写，太煎熬了。\
 &emsp;&emsp;现在为了一年后校招（或半年后准备投暑期实习）的事情开始用Java重捡算法题，从Leetcode的剑指offer（第2版）开始记录一下每天的题解和笔记，不过因为最近还在忙着学JavaWeb，后面还有SSM等各种框架还有中间件的学习，所以算法题争取一天能写个1-2道吧。
+
 <div align = right>2022.8.1</div>
 
-### 03.数组中重复的数字
+## 03.数组中重复的数字
 &emsp;&emsp;[03.数组中重复的数字](https://leetcode.cn/problems/shu-zu-zhong-zhong-fu-de-shu-zi-lcof/)&emsp;难度：easy\
 &emsp;&emsp;看到题目最先想到的用哈希表，可以直接AC：
 ```java
@@ -51,7 +52,7 @@ class Solution {
 }
 ```
 
-### 04.二维数组中的查找
+## 04.二维数组中的查找
 &emsp;&emsp;[04.二维数组中查找](https://leetcode.cn/problems/er-wei-shu-zu-zhong-de-cha-zhao-lcof/)&emsp;难度：medium\
 &emsp;&emsp;一开始除了暴力以外没有头绪，后来看了评论以后发现从矩阵右上角看是颗二叉搜索树，难度瞬间变成了easy，说起来这算脑筋急转弯级别的了吧...
 ```java
@@ -82,7 +83,7 @@ class Solution {
 }
 ```
 
-### 05.替换空格
+## 05.替换空格
 &emsp;&emsp;[05.替换空格](https://leetcode.cn/problems/ti-huan-kong-ge-lcof/)&emsp;难度：easy\
 &emsp;&emsp;思路挺简单的，只需要注意String对象不可变，所以用上StringBuilder就可以了。
 ```java
@@ -107,7 +108,7 @@ class Solution {
 ```
 &emsp;&emsp;当然可以用replace()方法一行解决，不过这题就没啥意义了（虽然本身也没啥意义）。
 
-### 06.从尾到头打印链表
+## 06.从尾到头打印链表
 &emsp;&emsp;[06.从尾到头打印链表](https://leetcode.cn/problems/cong-wei-dao-tou-da-yin-lian-biao-lcof/)&emsp;难度：easy\
 &emsp;&emsp;以前好像写过反转链表的题目，不过这题是要返回数组，和直接改指针不太一样。\
 &emsp;&emsp;第一反应是用栈，然后装填进数组中：
@@ -171,7 +172,7 @@ class Solution{
 }
 ```
 
-### 07.重建二叉树
+## 07.重建二叉树
 &emsp;&emsp;[07.重建二叉树](https://leetcode.cn/problems/zhong-jian-er-cha-shu-lcof/)&emsp;难度：medium\
 &emsp;&emsp;算是把当时学数据结构时的算法实现了一遍，其实这种题作为教学来说手写出来是很快的，但代码实现的时候写的确实不算流畅，磕磕绊绊写了个简单但是复杂度较高的算法：
 ```java
@@ -237,7 +238,7 @@ class Solution {
 ```
 &emsp;&emsp;在这个算法中，最花费的时间的操作是哈希表的初始化，为$O(N)$，而递归建立结点与定位的时间仅为$O(1)$，故这是一个$O(N)$的算法。
 
-### 09.用两个栈实现队列
+## 09.用两个栈实现队列
 &emsp;&emsp;[09.用两个栈实现队列](https://leetcode.cn/problems/yong-liang-ge-zhan-shi-xian-dui-lie-lcof/)&emsp;难度：easy\
 \
 ![图片](https://s1.328888.xyz/2022/08/04/jJqN5.png)\
@@ -277,7 +278,7 @@ class CQueue {
  */
 ```
 
-### 10.I.斐波那契数列
+## 10.I.斐波那契数列
 &emsp;&emsp;[10.I.斐波那契数列](https://leetcode.cn/problems/fei-bo-na-qi-shu-lie-lcof/)&emsp;难度：easy\
 &emsp;&emsp;看到通过率这么低就感觉有些不对劲，十秒钟写了个递归交了上去：
 ```java
@@ -314,12 +315,12 @@ class Solution {
 &emsp;&emsp;原本在返回值时进行模运算，结果在某个数据那溢出了，评论区说是要在每次求和时就进行模运算，不得不说Leetcode的题面有时候是真的坑人...\
 &emsp;&emsp;其实在运算过程中只用到了dp[i-1]和dp[i-2]两个值，这里可以用两个整型变量取代，不必建立长度n+1的数组，取代以后空间复杂度可以从$O(N)$降为$O(1)$。
 
-### 10.II.青蛙跳台阶问题
+## 10.II.青蛙跳台阶问题
 &emsp;&emsp;[10.II.青蛙跳台阶问题](https://leetcode.cn/problems/qing-wa-tiao-tai-jie-wen-ti-lcof/)&emsp;难度：easy\
 &emsp;&emsp;经典的DP问题，实际也就是斐波那契数列问题，解法与上题一致。\
 &emsp;&emsp;但值得注意的是这题默认fib(0)没有意义，在0阶台阶时也会有一种解法，所以dp[0]=1。
 
-### 11.旋转数组的最小数字
+## 11.旋转数组的最小数字
 &emsp;&emsp;[11.旋转数组的最小数字](https://leetcode.cn/problems/xuan-zhuan-shu-zu-de-zui-xiao-shu-zi-lcof/)&emsp;难度：easy\
 &emsp;&emsp;**部分有序的数组考察的就是二分查找。**\
 &emsp;&emsp;可以把原先的数组看成两个递增数组组合而成，如果中间点小于最右边，说明此时位于右边递增数组，就搜索中间点左边；如果中间点大于最右边，说明此时位于左边递增数组，就搜索中间点右边；如果中间点与右边相等，无法判断，可以直接进行遍历。
@@ -359,7 +360,7 @@ class Solution {
 ```
 &emsp;&emsp;相比于直接暴力遍历，二分法可将时间复杂度由$O(N)$降为$O(logN)$。
 
-### 12.矩阵中的路径
+## 12.矩阵中的路径
 &emsp;&emsp;[12.矩阵中的路径](https://leetcode.cn/problems/ju-zhen-zhong-de-lu-jing-lcof/)&emsp;难度：medium\
 &emsp;&emsp;DFS的模板题，这里用DFS+回溯的方法，需要一个二维数组visited用于判断是否走过，一个一维数组便于遍历字符串。\
 &emsp;&emsp;在DFS中，递归结束的条件：
@@ -408,7 +409,7 @@ class Solution {
 }
 ```
 
-### 14.I.剪绳子
+## 14.I.剪绳子
 &emsp;&emsp;[14.I.剪绳子](https://leetcode.cn/problems/jian-sheng-zi-lcof/)&emsp;难度：medium\
 &emsp;&emsp;碰到求最优解的问题第一反应是动态规划：
 * 对于长度为n的绳子剪掉后的最大乘积，可以通过前面比n小的绳子转化一部分过来
@@ -452,7 +453,7 @@ class Solution {
 ```
 &emsp;&emsp;用贪心的话时间复杂度可由$O(N^2)$降为$O(N)$，并且由于不用dp数组，空间复杂度由$O(N)$降为$O(1)$。
 
-### 14.II.剪绳子II
+## 14.II.剪绳子II
 &emsp;&emsp;[14.II.剪绳子II](https://leetcode.cn/problems/jian-sheng-zi-ii-lcof/)&emsp;难度：medium\
 &emsp;&emsp;这题与上题题面一致，唯一不同的就是加大了n的测试范围，使得上面的代码会溢出，而DP的解法使得取余以后max函数不能比较大小，所以这里对贪心的解法进行取余：
 ```java
@@ -473,7 +474,7 @@ class Solution {
 ```
 &emsp;&emsp;当然DP如果换成BigInteger也是可以用的，不过效率很低。
 
-### 15.二进制中1的个数
+## 15.二进制中1的个数
 &emsp;&emsp;[15.二进制中1的个数](https://leetcode.cn/problems/er-jin-zhi-zhong-1de-ge-shu-lcof/)&emsp;难度：easy\
 &emsp;&emsp;我是铸币，只会位运算，但相比转成字符串再数还是没那么铸币：
 ```java
@@ -492,7 +493,7 @@ public class Solution {
 }
 ```
 
-### 16.数值的整数次方
+## 16.数值的整数次方
 &emsp;&emsp;[16.数值的整数次方](https://leetcode.cn/problems/shu-zhi-de-zheng-shu-ci-fang-lcof/)&emsp;难度：medium\
 &emsp;&emsp;快速幂算法模板题：
 * $x^n$ = $(x^2)^\frac{n}{2}$
@@ -523,7 +524,7 @@ class Solution {
 ```
 &emsp;&emsp;本质是二分法，所以时间复杂度为$O(logN)$。
 
-### 17.打印从1到最大的n位数
+## 17.打印从1到最大的n位数
 &emsp;&emsp;[17.打印从1到最大的n位数](https://leetcode.cn/problems/da-yin-cong-1dao-zui-da-de-nwei-shu-lcof/)&emsp;难度：easy\
 &emsp;&emsp;应该感叹一下终于有送分题了：
 ```java
@@ -538,7 +539,7 @@ class Solution {
 }
 ```
 
-### 18.删除链表的结点
+## 18.删除链表的结点
 &emsp;&emsp;[18.删除链表的结点](https://leetcode.cn/problems/shan-chu-lian-biao-de-jie-dian-lcof/)&emsp;难度：easy\
 &emsp;&emsp;双指针法：\
 ![图片](https://s1.328888.xyz/2022/08/14/TsqLI.png)
@@ -574,7 +575,7 @@ class Solution {
 ```
 &emsp;&emsp;值的注意的是，这里只返回了链表头结点，实际被删除的点本身并没有释放，指针也没有删除。
 
-### 20.表示数值的字符串
+## 20.表示数值的字符串
 
 ​		[20.表示数值的字符串](https://leetcode.cn/problems/biao-shi-shu-zhi-de-zi-fu-chuan-lcof/)	难度：medium
 
@@ -615,7 +616,7 @@ class Solution {
 
 ​		被各种样例卡了好久，难度是medium但恶心程度犹胜hard，只能说面试时敢出这种我就敢挂，实在不行也只能在面试官面前画自动机 :)
 
-### 21.调整数组顺序使奇数位于偶数前面
+## 21.调整数组顺序使奇数位于偶数前面
 
 ​		[21.调整数组顺序使奇数位于偶数前面](https://leetcode.cn/problems/diao-zheng-shu-zu-shun-xu-shi-qi-shu-wei-yu-ou-shu-qian-mian-lcof/)	难度：easy
 
@@ -644,6 +645,155 @@ class Solution {
 }
 ```
 
+## 22.链表中倒数第K个节点
 
+​		[链表中倒数第K个结点](https://leetcode.cn/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/)	难度：easy
 
-​		
+​		一开始用了最容易想到的办法，遍历链表找出元素个数，然后定位最终位置即可：
+
+```java
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public ListNode getKthFromEnd(ListNode head, int k) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode node = head;
+        int length = 1;
+        while (node.next != null) {		// 计算链表长度
+            length++;
+            node = node.next;
+        }
+        length -= k;	// 倒数第k个，所以长度-k
+        while (length != 0) {	// 再从头走到倒数第k个
+            head = head.next;
+            length--;
+        }
+        return head;
+    }
+}
+```
+
+​		还有双指针写法，让快指针比慢指针先走k步，这样快指针走到链表尾部时慢指针就到了链表倒数第k位。
+
+​		虽然多建了一个节点变量，但只遍历了一遍：
+
+```java
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public ListNode getKthFromEnd(ListNode head, int k) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode fast = head;
+        ListNode slow = head;
+        while (k != 0) {	// 快指针比慢指针快走k步
+            fast = fast.next;
+            k--;
+        }
+        while (fast != null) {	// 等快指针到尾部说明慢指针到了倒数第k位
+            fast = fast.next;
+            slow = slow.next;
+        }
+        return slow;
+    }
+}
+```
+
+## 24.反转链表
+
+​		[24.反转链表](https://leetcode.cn/problems/fan-zhuan-lian-biao-lcof/)	难度：easy
+
+​		我记得我写过两三遍的反转链表了，但看了一下发现没有提交记录，我也不记得是在哪写的了。
+
+​		迭代法，用三个指针（虽然我一开始不知道这个叫迭代法）。
+
+![图片](https://s1.328888.xyz/2022/08/25/weY6d.png)
+
+​		代码如下：
+
+```java
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public ListNode reverseList(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode pre = null;
+        ListNode cur = head;
+        ListNode next = null;
+        while (cur != null) {
+            next = cur.next;	// next指针后移
+            cur.next = pre;		// 倒置指针
+            pre = cur;			// pre指针后移
+            cur = next;			// cur指针后移
+        }
+        return pre;
+    }
+}
+```
+
+​		还可以用递归，递归法容易想到，但深度为N，空间复杂度较高。
+
+## 25.合并两个排序的链表
+
+​		[25.合并两个排序的链表](https://leetcode.cn/problems/he-bing-liang-ge-pai-xu-de-lian-biao-lcof/)	难度：easy
+
+​		好像之前在严蔚敏的数据结构课本上看到过这题，只需要遍历两个链表逐次比较就可以了，难点在于需要设置一个伪头节点在第一轮将节点添加到合并链表中。
+
+```java
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        ListNode head = new ListNode(0);	// 伪头节点，把两个链表中的节点都接到它后面
+        ListNode node = head;				// 用于遍历
+        while (l1 != null && l2 != null) {
+            if (l1.val < l2.val) {			// l1的值小于l2就把l1接到合并链表后面
+                node.next = l1;
+                node = node.next;
+                l1 = l1.next;
+            }else {							// 反之把l2接后面
+                node.next = l2;
+                node = node.next;
+                l2 = l2.next;
+            }
+        }
+        if (l1 != null) {					// 按照上面的循环条件，最后肯定会有其中一个链表的最后一个节点没有接上，所以这里判断是哪个
+            node.next = l1;
+        }
+        if (l2 != null) {
+            node.next = l2;
+        }
+        return head.next;					// 伪头结点的下一个就是合并链表的真正起点
+    }
+}
+```
+
