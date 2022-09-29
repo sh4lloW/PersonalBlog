@@ -797,3 +797,247 @@ class Solution {
 }
 ```
 
+## 26.树的子结构
+
+​		[26.树的子结构](https://leetcode.cn/problems/shu-de-zi-jie-gou-lcof/)	难度：medium
+
+​		有关二叉树的题目一般都有关递归，关于递归最重要的一点是：不要细想递归实现的细节，而是清楚递归函数调用的目的。
+
+​		这道题首先需要明确的一点是：`isSubStructure()`函数的目的就是确认B是不是A的子结构。
+
+​		B是A的子结构有三种情况：
+
+* B的根节点就是A的根节点，那么只需要判断B下面的结构与A是否匹配，调用`search()`函数
+* B的根节点在A的左子树下，那么就往左递归，返回`isSubStructure(A.left, B)`
+* B的根节点在A的右子树下，那么就往右递归，返回`isSubStructure(A.right, B)`
+
+​		在判断下面结构是否匹配的函数`search()`中，终止条件就是看值是否相等以及是否遍历完。
+
+```java
+class Solution {
+    public boolean isSubStructure(TreeNode A, TreeNode B) {
+        // 根据题意，A树或B树为空直接返回false
+        if (A == null || B == null) {
+            return false;
+        }
+        // 分别对应：B的根对应A的根、B的根在A左子树下、B的根在A右子树下
+        return search(A, B) || isSubStructure(A.left, B) || isSubStructure(A.right, B);
+    }
+
+    public boolean search(TreeNode A, TreeNode B) {
+        // 终止条件1：B为空代表已经全部匹配完成，返回true
+        if (B == null) {
+            return true;
+        }
+        // 终止条件2：A为空代表匹配错误，返回false
+        if (A == null) {
+            return false;
+        }
+        // 返回当前根节点是否相等，并去匹配当前根节点下的左右子树
+        return A.val == B.val && search(A.left, B.left) && search(A.right, B.right);
+    }
+}
+```
+
+## 27.二叉树的镜像
+
+​		[27.二叉树的镜像](https://leetcode.cn/problems/er-cha-shu-de-jing-xiang-lcof/)	难度：easy
+
+​		很经典的翻转二叉树问题，只需要从根节点下面开始递归交换左右子树就可以了。
+
+```java
+class Solution {
+    public TreeNode mirrorTree(TreeNode root) {
+        // 树为空
+        if (root == null) {
+            return root;
+        }
+        // 递归交换子树
+        TreeNode temp = root.left;
+        root.left = mirrorTree(root.right);
+        root.right = mirrorTree(temp);
+        return root;
+    }
+}
+```
+
+## 28.对称的二叉树
+
+​		[28.对称的二叉树](https://leetcode.cn/problems/dui-cheng-de-er-cha-shu-lcof/)	难度：easy
+
+​		一颗二叉树是对称的，那么它左边的左边要和右边的右边相同，左边的右边要和右边的左边相同。
+
+​		如图：
+
+![图片](https://s1.328888.xyz/2022/09/28/sUgU7.png)
+
+​		接下来就是思考递归结束的条件：
+
+* 如果对应的值不相等，那肯定不是镜像的，返回false
+* 如果有一边节点为空，另一边还有节点，说明不对称，返回false
+* 如果两边节点都为空，说明两边都走完了，对称，返回true
+
+​		代码如下：
+```java
+class Solution {
+    public boolean isSymmetric(TreeNode root) {
+        // 如果树为空直接返回true
+        if (root == null) {
+            return true;
+        }
+        // 从两边开始递归
+        return compare(root.left, root.right);
+    }
+    public boolean compare(TreeNode left, TreeNode right) {
+        // 两边节点都为空
+        if (left == null && right == null) {
+            return true;
+        }
+        // 有了上边的前提，这里只要有一个为空说明不对称
+        if (left == null || right == null) {
+            return false;
+        }
+        // 判断值是否相等以及继续往深处递归，后两个是分别判断左边的左边和右边的右边相等以及左边的右边与右边的左边相等
+        return left.val == right.val && compare(left.left, right.right) && compare(left.right, right.left);
+    } 
+}
+```
+
+## 29.顺时针打印矩阵
+
+​		[29.顺时针打印矩阵](https://leetcode.cn/problems/shun-shi-zhen-da-yin-ju-zhen-lcof/)	难度：easy
+
+​		模拟题，难点在于边界的控制。
+
+```java
+class Solution {
+    public int[] spiralOrder(int[][] matrix) {
+        int row = matrix.length;
+        // 一开始在这交了一发RE就是没判空
+        if (row == 0) {
+            return new int[0];
+        }
+        int col = matrix[0].length;
+        // ans数组用于装顺序答案，大小为矩阵的长×宽
+        int[] ans = new int[row * col];
+        // index用于给数组定位
+        int index = 0;
+        // 四个边界
+        int left = 0, right = col-1, top = 0, bottom = row-1;
+        // 死循环，出去的条件就是边界出了问题
+        while (true) {
+            // 从左往右
+            for (int i = left; i <= right; i++) {
+                ans[index++] = matrix[top][i];
+            }
+            top++;	// 走完顶上一行，top下降
+            if (top > bottom) {		// if条件就是边界超出
+                break;
+            }
+            // 从上往下
+            for (int i = top; i <= bottom; i++) {
+                ans[index++] = matrix[i][right];
+            }
+            right--;	// 走完右边一列，right往左
+            if(right < left) {
+                break;
+            }
+            // 从右往左
+            for (int i = right; i >= left; i--) {
+                ans[index++] = matrix[bottom][i];
+            }
+            bottom--;	// 走完底部一行，bottom往上
+            if (bottom < top) {
+                break;
+            }
+            // 从下往上
+            for (int i = bottom; i >= top; i--) {
+                ans[index++] = matrix[i][left];
+            }
+            left++;		// 走完左边一列，left往右
+            if (left > right) {
+                break;
+            }
+        }
+        return ans;   
+    }
+}
+```
+
+## 30.包含min函数的栈
+
+​		[30.包含min函数的栈](https://leetcode.cn/problems/bao-han-minhan-shu-de-zhan-lcof/)	难度：easy
+
+​		不太喜欢这种脱裤子放屁的题目，实际题解还是利用栈来实现栈，不过这题的关键点在于怎么让`min()`函数的时间复杂度达到_O(1)_。
+
+​		一开始的设想是自己自定义一个数据类型来动态维护最小值，或者使用双栈，其中一个栈作为辅助栈存最小值，但在评论区看到了一个很不错的解法，它并不省空间，甚至比双栈还要占空间，但它的代码十分好懂，方法简洁清晰。
+
+​		关键点还是在于最小值的维护，在这个算法中，push和pop操作都操作了两个值，其中一个是当前值，一个是当前栈中的最小值，在每次push和pop操作中都会对最小值进行比较。
+
+​		假设现在有2、3、1三个数需要入栈：
+
+![图片](https://s1.328888.xyz/2022/09/29/MBb8k.png)
+
+​		代码如下：
+
+```java
+class MinStack {
+
+    /** initialize your data structure here. */
+    private Stack<Integer> s = new Stack<Integer>();
+    int MIN = Integer.MAX_VALUE;		// 定义一个最小值，用于记录当前栈中最小值，初始为最大整数值
+    public MinStack() {
+        
+    }
+    
+    public void push(int x) {
+        s.push(MIN);					// 首先推最小值入栈
+        if (x < MIN) {					// 如果当前要推入的值小于当前栈中的最小值
+            MIN = x;					// 更新当前栈的最小值
+        }
+        s.push(x);						// 推入当前值
+    }
+    
+    public void pop() {
+        s.pop();						// 先弹出栈顶值
+        if (MIN < s.peek()) {			// 如果之前记录的最小值小于当前栈中最小值
+            MIN = s.peek();				// 更新
+        }
+        s.pop();						// 弹出记录值
+    }
+    
+    public int top() {					// top就是读取当前栈顶元素
+        return s.peek();				// 由于push和pop操作都动了两个数，所以栈顶肯定是真实的栈顶元素，不会碰到MIN
+    }
+    
+    public int min() {					// MIN变量中存的就是当前栈中的最小值
+        return MIN;
+    }
+}
+```
+
+## 31.栈的压入、弹出序列
+
+​		[31.栈的压入、弹出序列](https://leetcode.cn/problems/zhan-de-ya-ru-dan-chu-xu-lie-lcof/)	难度：medium
+
+​		记得以前数据结构学到栈的时候，就会出两个序列来判断栈能否达成，没想到还真有这样的编程题。
+
+​		同样是模拟，真的建一个栈来模拟序列中的操作：
+
+```java
+class Solution {
+    public boolean validateStackSequences(int[] pushed, int[] popped) {
+        Stack<Integer> stack = new Stack<Integer>();
+        int index = 0;					// 用于popped的下标
+        for (int i = 0; i < pushed.length; i++) {
+            stack.push(pushed[i]);		// 将pushed数组中的元素入栈
+            while (!stack.empty() && stack.peek() == popped[index]) {		// 先判断栈非空，不然peek匹配不到
+                stack.pop();			// 如果栈顶和popped当前元素相同说明可以出栈了
+                index++;				// 指针向前
+            }
+        }
+        return stack.empty();			// 看最后栈是否为空，
+    }
+}
+```
+
