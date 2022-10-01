@@ -1041,3 +1041,125 @@ class Solution {
 }
 ```
 
+## 32.I.从上到下打印二叉树
+
+​		[32.I.从上到下打印二叉树](https://leetcode.cn/problems/cong-shang-dao-xia-da-yin-er-cha-shu-lcof/)	难度：medium
+
+​		二叉树的层序遍历，思路就是低配版的BFS，用队列存储每一层的所有节点，并对每个节点的左右子节点加入到队列中。
+
+```java
+class Solution {
+    public int[] levelOrder(TreeNode root) {
+        // 树为空
+        if (root == null) {
+            return new int[0];
+        }
+        // BFS中的队列
+        Queue<TreeNode> queue = new LinkedList<TreeNode>();
+        // 用来存最后的遍历序列
+        ArrayList<Integer> ans = new ArrayList<Integer>();
+        // 先将根节点加入到队列中
+        queue.add(root);
+        while (!queue.isEmpty()) {			// 循环的条件是队列非空，队列空了就是树遍历完了
+            TreeNode node = queue.poll();
+            ans.add(node.val);				// 队列弹出的点加入到数组中
+            if (node.left != null) {		// 将左子节点加入到队列中
+                queue.add(node.left);
+            }
+            if (node.right != null) {		// 将右子节点加入到队列中
+                queue.add(node.right);
+            }
+        }
+        // 题目返回的是int类型的数组，这里要进行转换
+        int[] finalAns = new int[ans.size()];
+        for (int i = 0; i < finalAns.length; i++) {
+            finalAns[i] = ans.get(i);
+        }
+        return finalAns;
+    }
+}
+```
+
+## 32.II.从上到下打印二叉树 II
+
+​		[32.II.从上到下打印二叉树 II](https://leetcode.cn/problems/cong-shang-dao-xia-da-yin-er-cha-shu-ii-lcof/)	难度：easy
+
+​		是上题的变种，区别在于这里需要将二叉树分层存入数组中，只需要在上题的基础上加一个for循环存入每层的节点。
+
+```java
+class Solution {
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        // 树为空
+        if (root == null) {
+            List<List<Integer>> e = new ArrayList<>();
+            return e;
+        }
+        Queue<TreeNode> queue = new LinkedList<TreeNode>();
+        List<List<Integer>> ans = new ArrayList<>();
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            // temp用于存每层的所有节点
+            List<Integer> temp = new ArrayList<>();
+            // for循环写自减而不是自增，因为循环里有pop操作，队列的大小会变
+            for (int i = queue.size(); i > 0; i--) {
+                TreeNode node = queue.poll();
+                temp.add(node.val);
+                if (node.left != null) {
+                    queue.add(node.left);
+                }
+                if (node.right != null) {
+                    queue.add(node.right);
+                }
+            }
+            // 将每层的节点再放进二维数组中
+            ans.add(temp);
+        }
+        // 直接返回二维数组就好
+        return ans;
+    }
+}
+```
+
+## 32.III.从上到下打印二叉树 III
+
+​		[32.III.从上到下打印二叉树 III](https://leetcode.cn/problems/cong-shang-dao-xia-da-yin-er-cha-shu-iii-lcof/)	难度：medium
+
+​		和上题的区别就是这里需要反向存储，奇数行存储正向的层节点，偶数行存储反向的层节点，所以在层数时进行特判就可以了。
+
+```java
+class Solution {
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        if (root == null) {
+            List<List<Integer>> e = new ArrayList<>();
+            return e;
+        }
+        Queue<TreeNode> queue = new LinkedList<TreeNode>();
+        List<List<Integer>> ans = new ArrayList<>();
+        // row代表当前的行数
+        int row = 1;
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            List<Integer> temp = new ArrayList<>();
+            for (int i = queue.size(); i > 0; i--) {
+                TreeNode node = queue.poll();
+                temp.add(node.val);
+                if (node.left != null) {
+                    queue.add(node.left);
+                }
+                if (node.right != null) {
+                    queue.add(node.right);
+                }
+            }
+            // 如果是偶数行就反转数组
+            if (row % 2 == 0) {
+                Collections.reverse(temp);
+            }
+            ans.add(temp);
+            // 行数递增
+            row++;
+        }
+        return ans;
+    }
+}
+```
+
