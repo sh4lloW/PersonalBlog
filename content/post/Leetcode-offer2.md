@@ -496,7 +496,7 @@ public class Solution {
 ## 16.数值的整数次方
 &emsp;&emsp;[16.数值的整数次方](https://leetcode.cn/problems/shu-zhi-de-zheng-shu-ci-fang-lcof/)&emsp;难度：medium\
 &emsp;&emsp;快速幂算法模板题：
-* $x^n$ = $(x^2)^\frac{n}{2}$
+* $$x^n = (x^2)^\frac{n}{2}$$
 * 对于这种形式有两种情况：
 * $n$为偶数，$x^n$ = $(x^2)^{\lfloor\frac{n}{2}\rfloor}$
 * $n$为奇数，$x^n$ = $x(x^2)^{\lfloor\frac{n}{2}\rfloor}$\
@@ -522,7 +522,7 @@ class Solution {
     }
 }
 ```
-&emsp;&emsp;本质是二分法，所以时间复杂度为$O(logN)$。
+&emsp;&emsp;本质是二分法，所以时间复杂度为O(logN)。
 
 ## 17.打印从1到最大的n位数
 &emsp;&emsp;[17.打印从1到最大的n位数](https://leetcode.cn/problems/da-yin-cong-1dao-zui-da-de-nwei-shu-lcof/)&emsp;难度：easy\
@@ -1159,6 +1159,131 @@ class Solution {
             row++;
         }
         return ans;
+    }
+}
+```
+
+## 33.二叉搜索树的后序遍历序列
+
+​		[33.二叉搜索树的后序遍历序列](https://leetcode.cn/problems/er-cha-sou-suo-shu-de-hou-xu-bian-li-xu-lie-lcof/)	难度：medium
+
+​		二叉搜索树的性质是，对于二叉树的任意一个节点，它的左节点小于它本身，右节点大于它本身，因此对于根节点来说，它的左子树都是二叉搜索树，右子树也都是二叉搜索树。
+
+​		后序遍历的顺序为“左节点，右节点，根节点”。
+
+​		因此对于一个二叉搜索树的后序遍历序列来说，有两点是确定的：
+
+* 序列最后一个值一定是根节点的值
+* 对序列从前往后遍历，第一个大于根节点的值一定是根节点的右子节点，此时这个点左边的节点都是根节点的左子树，右边的值（包括本身）都是根节点的右子树
+
+​		由此就可以想到用递归分治的思路解决：
+
+```java
+class Solution {
+    public boolean verifyPostorder(int[] postorder) {
+        return solve(postorder, 0, postorder.length - 1);
+    }
+    public boolean solve(int[] postorder, int left, int right) {
+        // 递归的终止条件是left >= right，代表着只有一个或者没有节点了
+        if (left >= right) {
+            return true;
+        }
+        // 从头开始遍历数组，找到第一个大于根节点的点
+        int pointer = left;
+        while (postorder[pointer] < postorder[right]) {
+            pointer++;
+        }
+        // 找到以后要验证该点后面的值是否都大于根节点，保证这是一颗二叉搜索树
+        int temp = pointer;
+        while (temp < right) {
+            if (postorder[temp] < postorder[right]) {
+                return false;
+            }
+            temp++;
+        }
+        // 继续递归根的左子树和右子树
+        return solve(postorder, left, pointer - 1) && solve(postorder, pointer, right - 1);
+    }
+}
+```
+
+​		题解区有关于辅助单调栈的解法，可以将时间复杂度由$O(N)$降为$O(N^2)$，但单调栈的方法不易理解，在题解区有一种十分容易理解的方法：仿照序列构建一颗二叉搜索树，当然不用真正的建树，只需要判断是否符合二叉搜索树的结构：
+
+```java
+class Solution {
+    // cnt用于统计还剩多少个节点没放进树中
+    int cnt = 0;
+    public boolean verifyPostorder(int[] postorder) {
+        if (postorder == null || postorder.length == 1){
+            return true;
+        }
+        // 初始为数组长度，-1是为了下标
+        cnt = postorder.length - 1;
+        // 开始递归建树
+        build(postorder, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        // 如果放完了说明这就是二叉搜索树
+        if (cnt < 0) {
+            return true;
+        }else {
+            return false;
+        }
+    }
+    public void build(int[] postorder, int min, int max) {
+        // 如果放完了就返回
+        if (cnt < 0) {
+            return ;
+        }
+        // 取数组最后一个值作为根
+        int root = postorder[cnt];
+        if (root >= max || root <= min) {// 不在上下界范围内直接返回
+            return ;
+        }
+        // 都符合条件就减少
+        cnt--;
+        build(postorder, root, max);	// 建右子树
+        build(postorder, min, root);	// 建左子树
+        // root在不断刷新递归的上下界，达到建树目的
+    }
+}
+```
+
+## 34.二叉树中和为某一值的路径
+
+​		[34.二叉树中和为某一值的路径](https://leetcode.cn/problems/er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-jing-lcof/)	难度：medium
+
+​		DFS+回溯，从二叉树的根节点开始深度遍历，找到和为目标值的路径，递归结束的路径为节点为空（已经到了叶子节点）。
+
+```java
+class Solution {
+    // 装多条路径的最后答案
+    List<List<Integer>> ans = new ArrayList<>();
+    // 用来存储深搜路径
+    List<Integer> path = new ArrayList<Integer>();
+    public List<List<Integer>> pathSum(TreeNode root, int target) {
+        dfs(root, target);
+        return ans;
+    }
+    public void dfs(TreeNode root, int target) {
+        // 为空说明上一层递归已经到了叶子节点
+        if (root == null) {
+            return ;
+        }
+        // 路径中加入当前点
+        path.add(root.val);
+        target -= root.val;
+        // 符合和为目标值且为叶子节点的路径
+        if (target == 0 && root.left == null && root.right == null) {
+            // 不能直接ans.add(path)，这样是加入了一个对象，但是随着后面的remove，path是会改变的
+            // 所以new ArrayList(path)相当于复制了一个数组进去
+            ans.add(new ArrayList(path));
+            // 为什么这里不直接返回
+            // 提前返回会导致后面的move没有执行，影响回溯结果
+            // 相当于找新路径时前面的点还没删干净，所以可能会生成一条不可能出现的路径
+        }
+        dfs(root.left, target);
+        dfs(root.right, target);
+        // 删掉数组中最后一个点回溯
+        path.remove(path.size() - 1);
     }
 }
 ```
