@@ -1,6 +1,6 @@
 ---
 title: "JAVA - JPA基础"
-date: 2022-11-2T08:08:08+08:00
+date: 2022-11-02T08:08:08+08:00
 categories:
     - Java
 tags:
