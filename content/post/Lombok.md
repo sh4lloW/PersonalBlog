@@ -53,7 +53,7 @@ public class Student {
 ## Lombok原理
 &emsp;&emsp;Lombok是一种插件化注解API，在javac进行编译时进行处理。\
 &emsp;&emsp;Java的编译可以分成以下阶段：
-![图片](https://s1.328888.xyz/2022/07/29/FlUhd.png)\
+![java编译.png](http://tva1.sinaimg.cn/large/008kE3f3gy1h7wmbcve9nj30go0233yw.jpg)
 * 源文件被解析成语法树。
 * 调用注解处理器。
 * 语法树被分析为class文件。\

@@ -86,9 +86,9 @@ public class MybatisUtil {
 }
 ```
 &emsp;&emsp;每个基于`MyBatis`的应用都是以一个`SqlSessionFactory`的实例为核心的，我们可以通过`SqlSessionFactory`来创建多个新的会话，每个会话就相当于从不同的地方登陆一个账号去访问数据库，也可以认为这就是之前JDBC中的`Statement`对象，会话之间相互隔离，没有任何关联。\
-![图片](https://s1.328888.xyz/2022/08/14/TxPPg.png)\
+![SqlSession.png](http://tva1.sinaimg.cn/large/008kE3f3gy1h7wmcehi1xj30c609hmxs.jpg)
 &emsp;&emsp;`SqlSessionFactory`一般只用创建一次，所以创建MybatisUtil类作为工具类来管理，这样就可以直接在主程序当中调用了。\
-&emsp;&emsp;在此之前，先创建一个测试用的实体类用于读取（建议新建一个entity文件夹然后放在里面，便于统一管理）：
+&emsp;&emsp;在此之前，先创建一个测试用的实体类用于读取（建议新建一个entity文件夹然后放在里面，便于统一管理)：
 ```java
 @Data
 public class Student {

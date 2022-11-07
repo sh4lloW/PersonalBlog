@@ -241,7 +241,8 @@ class Solution {
 ## 09.用两个栈实现队列
 &emsp;&emsp;[09.用两个栈实现队列](https://leetcode.cn/problems/yong-liang-ge-zhan-shi-xian-dui-lie-lcof/)&emsp;难度：easy\
 \
-![图片](https://s1.328888.xyz/2022/08/04/jJqN5.png)\
+![栈实现队列.png](http://tva1.sinaimg.cn/large/008kE3f3gy1h7wmef69enj30gw0e6myn.jpg)
+
 ```java
 class CQueue {
     Stack<Integer> s1 = new Stack<>();  //栈建在外面，默认构造方法
@@ -542,7 +543,8 @@ class Solution {
 ## 18.删除链表的结点
 &emsp;&emsp;[18.删除链表的结点](https://leetcode.cn/problems/shan-chu-lian-biao-de-jie-dian-lcof/)&emsp;难度：easy\
 &emsp;&emsp;双指针法：\
-![图片](https://s1.328888.xyz/2022/08/14/TsqLI.png)
+![删除链表结点.png](http://tva1.sinaimg.cn/large/008kE3f3gy1h7wmf9w9w9j30gv0bkwf3.jpg)
+
 ```java
 /**
  * Definition for singly-linked list.
@@ -722,7 +724,7 @@ class Solution {
 
 ​		迭代法，用三个指针（虽然我一开始不知道这个叫迭代法）。
 
-![图片](https://s1.328888.xyz/2022/08/25/weY6d.png)
+![反转链表.png](http://tva1.sinaimg.cn/large/008kE3f3gy1h7wmfhn12dj30lk0inmzf.jpg)
 
 ​		代码如下：
 
@@ -869,9 +871,9 @@ class Solution {
 
 ​		如图：
 
-![图片](https://s1.328888.xyz/2022/09/28/sUgU7.png)
+![BT.png](http://tva1.sinaimg.cn/large/008kE3f3gy1h7wmhkt7ngj30a209fdgd.jpg)		
 
-​		接下来就是思考递归结束的条件：
+接下来就是思考递归结束的条件：
 
 * 如果对应的值不相等，那肯定不是镜像的，返回false
 * 如果有一边节点为空，另一边还有节点，说明不对称，返回false
@@ -976,7 +978,7 @@ class Solution {
 
 ​		假设现在有2、3、1三个数需要入栈：
 
-![图片](https://s1.328888.xyz/2022/09/29/MBb8k.png)
+![最小值栈.png](http://tva1.sinaimg.cn/large/008kE3f3gy1h7wmi1ob3gj30nb0k2whu.jpg)
 
 ​		代码如下：
 

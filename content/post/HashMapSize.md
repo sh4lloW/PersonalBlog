@@ -74,4 +74,4 @@ if (oldCap > 0) {
     if (binCount >= TREEIFY_THRESHOLD - 1) // -1 for 1st
                             treeifyBin(tab, hash);
 ```
-![图片](https://s1.328888.xyz/2022/07/20/lpG9F.png#pic_center)
+![图片](http://tva1.sinaimg.cn/large/008kE3f3gy1h7wm6p26onj30n10g1abe.jpg)

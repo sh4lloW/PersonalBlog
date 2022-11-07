@@ -14,7 +14,8 @@ draft: false
 * TCP：TCP是一种面向连接的、可靠的、基于字节流的传输层通信协议，可以保障两个应用程序间的可靠通信，连接会进行三次握手，断开也会进行四次挥手。
 * UDP：UDP是一种无连接协议，不会建立可靠传输，也就是说传输过程中有可能会导致部分数据丢失，但是它比TCP传输更加简单高效，应用程序通常必须容许一些丢失、错误或重复的数据包。
   
-![图片](https://s1.328888.xyz/2022/07/26/DIpCJ.png)
+
+![TCPandUDP.png](http://tva1.sinaimg.cn/large/008kE3f3gy1h7wmdgxde9j30fm07pt9y.jpg)
 
 ## Socket技术
 &emsp;&emsp;通过Socket技术，我们就可以实现两台计算机之间的通信，Socket也被翻译为套接字，是操作系统底层提供的一项通信技术，它支持TCP和UDP两种协议。\
@@ -24,6 +25,7 @@ draft: false
 * 客户端实例化一个Socket对象，指定服务端的名字与端口号来请求连接。
 * 服务端上的accept()会返回新的socket引用，该socket连接到客户端的socket。
   
+
 &emsp;&emsp;在连接建立以后，Socket通过I/O流进行通信，客户端的输入流连接到服务端的输出流，客户端的输出流连接到服务端的输入流。
 
 ## Socket服务端实例
@@ -149,7 +151,7 @@ socket.setKeepAlive(true);
 &emsp;&emsp;当客户端连接后，如果设置为 true，当对方没有发送任何数据过来，超过一个时间后会发送一个ack探测包发到对方，探测双方的TCP/IP连接是否有效。\
 \
 &emsp;&emsp;TCP在传输过程中，实际上会有一个缓冲区用于数据的发送和接收：\
-![图片](https://s1.328888.xyz/2022/07/26/DVhaP.jpg)
+![TCP缓冲区.jpg](http://tva1.sinaimg.cn/large/008kE3f3gy1h7wmk0c83fj30k00da757.jpg)
 
 &emsp;&emsp;此缓冲区大小为8192，可以手动调整其大小来优化传输效率：
 ```java

@@ -18,7 +18,7 @@ draft: false
 ## Maven项目结构
 &emsp;&emsp;Maven的项目结构十分清晰：
 
-![图片](https://s1.328888.xyz/2022/08/20/BIzRC.png)
+![maven.png](http://tva1.sinaimg.cn/large/008kE3f3gy1h7wmbu3s18j30q20gymz5.jpg)
 
 ​		可以看到，Maven自动构建了一套项目结构，将测试与主项目文件分开，并对配置文件等进行了分类，Maven给与了清晰的项目结构，开发者可以用Maven进行快捷的开发。
 

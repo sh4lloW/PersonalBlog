@@ -124,7 +124,7 @@ thread 1 end!
 ## 死锁
 &emsp;&emsp;早在操作系统中就有接触过死锁的概念，两个或以上的进程由于竞争资源或彼此通信问题而造成进程阻塞，若没有外力的推动，两个进程将无法推进下去。\
 &emsp;&emsp;当两个线程互相需要对面释放锁，进入无限等待的状态：
-![图片](https://s1.328888.xyz/2022/07/24/md19h.png#pic_center)\
+![死锁.png](http://tva1.sinaimg.cn/large/008kE3f3gy1h7wml7n91oj30al08x3yw.jpg)
 &emsp;&emsp;可以看到线程A与线程B被无限期阻塞，因此程序不可能正常终止。\
 &emsp;&emsp;我们试运行下面的代码：
 ```java
