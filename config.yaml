@@ -39,7 +39,7 @@ params:
 
     sidebar:
         emoji:
-        subtitle: personal blog
+        subtitle: Laughter in the Dark
         avatar:
             enabled: true
             local: true
@@ -202,11 +202,11 @@ menu:
           params:
               icon: brand-github
 
-        - identifier: twitter
-          name: Twitter
-          url: https://twitter.com
+        - identifier: wyy
+          name: 网易云
+          url: https://music.163.com/#/user/home?id=102028402
           params:
-              icon: brand-twitter
+              icon: brand-wyy
                 
 related:
     includeNewer: true
