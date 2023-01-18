@@ -206,7 +206,7 @@ menu:
           name: 网易云
           url: https://music.163.com/#/user/home?id=102028402
           params:
-              icon: brand-wyy
+              icon: brand-netease-music
                 
 related:
     includeNewer: true
