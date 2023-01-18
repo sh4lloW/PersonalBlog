@@ -318,7 +318,36 @@ public ResponseResult<?> articleList(Integer pageNum, Integer pageSize, Long cat
 
 #### 需求
 
-​		
+​		首页及分类的文章可以点击进入文章详情，在文章详情页面显示文章。
+
+#### 实现
+
+​		文章根据id定位，根据文章的id去查询文章的详情。
+
+```java
+@SneakyThrows
+@Override
+public ResponseResult<?> articleDetail(Long id) {
+    // 根据id查询文章
+
+    Article article = getById(id);
+    // bean copy
+    ArticleDetailVo articleDetailVo = BeanCopyUtils.copyBean(article, ArticleDetailVo.class);
+    // 根据分类id查询分类名
+    Long categoryId = article.getCategoryId();
+    Category category = categoryService.getById(categoryId);
+    if (category != null) {
+        articleDetailVo.setCategoryName(category.getName());
+    }
+
+    // 封装返回
+    return ResponseResult.okResult(articleDetailVo);
+}
+```
+
+#### 遇到的问题
+
+​		无。
 
 
 
