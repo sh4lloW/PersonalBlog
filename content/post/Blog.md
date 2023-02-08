@@ -33,7 +33,7 @@ draft: false
 
 ​	
 
-​		博客项目的后端包括博客后端和管理系统后端。
+​		博客项目的后端包括博客和管理系统两部分。
 
 ## 项目初始化 1.15
 
@@ -57,7 +57,7 @@ draft: false
 
 ​		建立ReponseResult，集体统一响应，符合接口开发规范。
 
-## 博客后端
+## 博客
 
 ### 配置文件
 
@@ -720,4 +720,680 @@ export function userLogin(username,password) {
 
 #### 数据表
 
+​		建立评论表comment，共有以下字段：
+
 ![img](https://raw.githubusercontent.com/sh4lloW/ImageHostingService/main/BlogImg/202302032252020.png)
+
+#### 需求
+
+​		在文章详情页面显示该文章的评论，评论分为根评论与子评论，子评论上要附带回复人与被回复人的ID。评论显示ID、发布时间与内容。
+
+#### 实现
+
+​		对评论表进行分页查询，前端会传过来文章的ID、分页的页数和页大小。
+
+​		这里分成两部分完成，第一部分是先查询根评论，查询的条件是article_id和root_id，root_id要为-1。第二部分是查询根评论下的子评论，并按生成时间升序排序。
+
+```java
+@Service
+public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> implements CommentService {
+
+    @Resource
+    private UserService userService;
+
+    @Override
+    public ResponseResult<?> commentList(Long articleId, Integer pageNum, Integer pageSize) {
+        // 查询对应文章根评论
+        LambdaQueryWrapper<Comment> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Comment::getArticleId, articleId);
+        queryWrapper.eq(Comment::getRootId, SystemConstants.COMMENT_ROOT);
+        // 分页
+        Page<Comment> page = new Page<>(pageNum, pageSize);
+        page(page, queryWrapper);
+
+        // bean copy
+        List<CommentVo> commentVoList = fixCommentVoList(page.getRecords());
+
+        // 查询根评论对应的子评论
+        for (CommentVo commentVo : commentVoList) {
+            List<CommentVo> children = getChildren(commentVo.getId());
+            commentVo.setChildren(children);
+        }
+
+        // 封装返回
+        return ResponseResult.okResult(new ListPageVo(commentVoList, page.getTotal()));
+    }
+
+    private List<CommentVo> fixCommentVoList(List<Comment> list) {
+        // 数据库中没有Vo的username和toCommentUserName，需要手动赋值
+        List<CommentVo> commentVoList = BeanCopyUtils.copyBeanList(list, CommentVo.class);
+        for (CommentVo commentVo : commentVoList) {
+            // 通过createBy查询username
+            commentVo.setUsername(userService.getById(commentVo.getCreateBy()).getNickName());
+            // 通过toCommentUserId查询toCommentUserName
+            // 需要判断这不是个根评论
+            if (commentVo.getToCommentId() != SystemConstants.COMMENT_ROOT) {
+                commentVo.setToCommentUserName(userService.getById(commentVo.getToCommentUserId()).getNickName());
+            }
+        }
+        return commentVoList;
+    }
+
+    private List<CommentVo> getChildren(Long id) {
+        LambdaQueryWrapper<Comment> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Comment::getRootId, id);
+        queryWrapper.orderByAsc(Comment::getCreateTime);
+        // 和上面一样需要在这里内部手动赋值
+        List<Comment> commentList = list(queryWrapper);
+        return fixCommentVoList(commentList);
+    }
+}
+```
+
+#### 遇到的问题
+
+​		无。
+
+### 发送评论功能 1.31
+
+#### 需求
+
+​		用户在登录的状态下可以对文章或友链发送评论、在评论下回复。
+
+#### 实现
+
+​		发送评论功能的实现本身很简单，只需要往数据库里插数据就行，MyBatisPlus有save函数可以完成插入。
+
+```java
+@Override
+public ResponseResult<?> addComment(Comment comment) {
+    // 评论内容不能为空
+    if (!StringUtils.hasText(comment.getContent())) {
+        throw new SystemException(HttpCodeEnum.CONTENT_NOT_NULL);
+    }
+    save(comment);
+    return ResponseResult.okResult();
+}
+```
+
+​		这里的重点是数据库的评论表中有创建时间和更新时间等字段，这里建一个工具类自动填充。
+
+```java
+@Component
+public class MyMetaObjectHandler implements MetaObjectHandler {
+    @Override
+    public void insertFill(MetaObject metaObject) {
+        Long userId = null;
+        try {
+            userId = SecurityUtils.getUserId();
+        } catch (Exception e) {
+            e.printStackTrace();
+            userId = -1L;//表示是自己创建
+        }
+        this.setFieldValByName("createTime", new Date(), metaObject);
+        this.setFieldValByName("createBy",userId , metaObject);
+        this.setFieldValByName("updateTime", new Date(), metaObject);
+        this.setFieldValByName("updateBy", userId, metaObject);
+    }
+
+    @Override
+    public void updateFill(MetaObject metaObject) {
+        this.setFieldValByName("updateTime", new Date(), metaObject);
+        this.setFieldValByName(" ", SecurityUtils.getUserId(), metaObject);
+    }
+}
+```
+
+​		在评论实体类中设置自动填充。
+
+```java
+@TableField(fill = FieldFill.INSERT)
+private Long createBy;
+@TableField(fill = FieldFill.INSERT)
+private Date createTime;
+@TableField(fill = FieldFill.INSERT_UPDATE)
+private Long updateBy;
+@TableField(fill = FieldFill.INSERT_UPDATE)
+private Date updateTime;
+```
+
+#### 遇到的问题
+
+​		无。
+
+### 友链评论 1.31
+
+#### 需求
+
+​		友链页面需要评论的接口，包括评论的查看和发送。
+
+#### 实现
+
+​		由于文章评论和友链评论在数据库的同一张表中，通过字段type区分，所以这里选择和前面的文章评论列表用同一个接口，传参多一个类型参数用于判断是文章评论还是友链评论。
+
+```java
+@GetMapping("/commentList")
+public ResponseResult<?> commentList(Long articleId, Integer pageNum, Integer pageSize){
+    return commentService.commentList(SystemConstants.ARTICLE_COMMENT, articleId, pageNum, pageSize);
+}
+
+@GetMapping("/linkCommentList")
+public ResponseResult<?> linkCommentList(Integer pageNum, Integer pageSize) {
+    return commentService.commentList(SystemConstants.LINK_COMMENT, null, pageNum, pageSize);
+}
+```
+
+​		然后修改接口的实现，加一行评论类型的判断，不过友链评论的话不会传articleId，所以在查文章评论的时候才需要加入文章id作为查询条件，其他的都是一样的。
+
+```java
+@Override
+public ResponseResult<?> commentList(String commentType, Long articleId, Integer pageNum, Integer pageSize) {
+    // 查询对应文章或友链的根评论
+    LambdaQueryWrapper<Comment> queryWrapper = new LambdaQueryWrapper<>();
+    // 只有是文章评论时才查articleId
+    queryWrapper.eq(SystemConstants.ARTICLE_COMMENT.equals(commentType), Comment::getArticleId, articleId);
+    queryWrapper.eq(Comment::getRootId, SystemConstants.COMMENT_ROOT);
+    queryWrapper.eq(Comment::getType, commentType);
+
+    // 分页
+    Page<Comment> page = new Page<>(pageNum, pageSize);
+    page(page, queryWrapper);
+
+    // bean copy
+    List<CommentVo> commentVoList = fixCommentVoList(page.getRecords());
+
+    // 查询根评论对应的子评论
+    for (CommentVo commentVo : commentVoList) {
+        List<CommentVo> children = getChildren(commentVo.getId());
+        commentVo.setChildren(children);
+    }
+
+    // 封装返回
+    return ResponseResult.okResult(new ListPageVo(commentVoList, page.getTotal()));
+}
+```
+
+​		这里是通过比对传入的类型，其实判断形参articleId是否为空也可以。
+
+#### 遇到的问题
+
+​		无。
+
+### 用户个人信息 2.1
+
+#### 需求
+
+​		登录后进入个人中心可以查看当前用户的信息。
+
+#### 实现
+
+​		从SecurityContextHolder中获取userId，通过userId来查用户信息。
+
+```java
+@SneakyThrows
+@Override
+public ResponseResult<?> userInfo() {
+    // 从SecurityContextHolder中获取userId
+    Long userId = SecurityUtils.getUserId();
+    // 用userId来查询用户信息
+    User user = getById(userId);
+    UserInfoVo userInfoVo = BeanCopyUtils.copyBean(user, UserInfoVo.class);
+    return ResponseResult.okResult(userInfoVo);
+}
+```
+
+​		记得修改权限，只有登录后才能查看个人信息。
+
+```java
+// 个人信息接口需要授权
+.antMatchers("/user/userInfo").authenticated()
+```
+
+#### 遇到的问题
+
+​		修改数据库中的头像发现前端并不会更换，看了一下前端代码好像头像是写死的，引用的静态变量。(2.1)
+
+​		这个问题在做完更新个人信息后得到了解决，然而我并没有修改前端代码，前端引用的静态变量仅用于未登录时，真是一个玄学问题...(2.2)
+
+### 头像上传 2.2
+
+#### 需求
+
+​		用户可以上传自己的头像用以更改个人信息。
+
+#### 实现
+
+​		采用七牛云OSS存储用户上传的头像图片。（为什么不用阿里云OSS，因为没钱）
+
+​		上传的相关代码参考了[七牛云官方文档](https://developer.qiniu.com/kodo/1239/java#5)的模板代码，这里将AK、SK、空间名称、图片外链等用SpringBoot的配置文件进行了封装。
+
+​		对文件的后缀类型进行检查，并在上传后将图片的外链返回。
+
+```java
+@Service
+@Data
+@ConfigurationProperties(prefix = "oss")
+public class UploadServiceImpl implements UploadService {
+    @Override
+    public ResponseResult<?> uploadImg(MultipartFile img) {
+        // 判断文件类型
+        String originalFilename = img.getOriginalFilename();
+        // 只准上传png/jpg/jpeg格式图片
+        if (!originalFilename.endsWith(".png") && !originalFilename.endsWith(".jpg") && !originalFilename.endsWith(".jpeg")) {
+            throw new SystemException(HttpCodeEnum.FILE_TYPE_ERROR);
+        }
+        // 上传文件到OSS
+        String imgUrl = uploadToOSS(img, PathUtils.generateFilePath(originalFilename));
+        // 返回图片的外链地址
+        return ResponseResult.okResult(imgUrl);
+    }
+
+    private String accessKey;
+    private String secretKey;
+    private String bucket;
+    
+    private String testCDN;
+
+    @SneakyThrows
+    private String uploadToOSS(MultipartFile img, String filePath) {
+        //构造一个带指定 Region 对象的配置类
+        Configuration cfg = new Configuration(Region.autoRegion());
+        cfg.resumableUploadAPIVersion = Configuration.ResumableUploadAPIVersion.V2;// 指定分片上传版本
+        //...其他参数参考类注释
+        UploadManager uploadManager = new UploadManager(cfg);
+        //...生成上传凭证，然后准备上传
+
+        String key = filePath;
+
+        try {
+            InputStream inputStream = img.getInputStream();
+
+            Auth auth = Auth.create(accessKey, secretKey);
+            String upToken = auth.uploadToken(bucket);
+
+            try {
+                Response response = uploadManager.put(inputStream, key, upToken, null, null);
+                //解析上传成功的结果
+                DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
+                System.out.println(putRet.key);
+                System.out.println(putRet.hash);
+                return testCDN + key;
+            } catch (QiniuException ex) {
+                Response r = ex.response;
+                System.err.println(r.toString());
+                try {
+                    System.err.println(r.bodyString());
+                } catch (QiniuException ex2) {
+                    //ignore
+                }
+            }
+        } catch (UnsupportedEncodingException ex) {
+            //ignore
+        }
+        return "error upload";
+    }
+
+}
+```
+
+​		其中PathUtils是新定义的工具类，它对上传的文件命名进行了重命名，存放在对应日期的路径内，并随机生成uuid。
+
+```java
+public class PathUtils {
+    public static String generateFilePath(String fileName){
+        // 根据日期生成路径
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd/");
+        String datePath = sdf.format(new Date());
+        // uuid作为文件名
+        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+        // 获取文件后缀并替换
+        int index = fileName.lastIndexOf(".");
+        String fileType = fileName.substring(index);
+        return datePath + uuid + fileType;
+    }
+}
+```
+
+#### 遇到的问题
+
+​		原本后端定义了token，要求验证后才可以上传，但是前端没做校验，所以只能把后端的权限校验删除了。
+
+​		第三次看这种官方文档来用API，目前觉得API官方文档写的百度语音识别 > 天行数据接口 > 七牛云OSS。大公司的文档还是写的比较清晰一点啊。
+
+### 更新个人信息 2.2
+
+#### 需求
+
+​		编辑个人资料后点击保存会对个人资料进行更新。
+
+#### 实现
+
+​		更新的操作使用的是put请求，这里直接用MyBatisPlus的方法对对应的userId信息进行更新。
+
+````java
+public ResponseResult<?> updateUserInfo(User user) {
+    updateById(user);
+    return ResponseResult.okResult();
+}
+````
+
+#### 遇到的问题
+
+​		无。
+
+### 注册用户 2.3
+
+#### 需求
+
+​		可以注册用户，注册后的用户可以进行登录操作。
+
+​		用户名、昵称、邮箱、密码不能为空，且用户名与昵称不能与数据库中的重复，且密码必须加密存储。
+
+#### 实现
+
+​		对传入的参数进行非空判断（这里没用validate，因为要结合DTO会与上面的更新个人信息接口冲突，所以这里写的很笨）并检查数据库中是否重复，再用PasswordEncoder对密码进行加密。
+
+```java
+@Override
+public ResponseResult<?> register(User user) {
+    // 判断数据是否为空
+    if (!StringUtils.hasText(user.getUserName())) {
+        throw new SystemException(HttpCodeEnum.USERNAME_NOT_NULL);
+    }
+    if (!StringUtils.hasText(user.getPassword())) {
+        throw new SystemException(HttpCodeEnum.PASSWORD_NOT_NULL);
+    }
+    if (!StringUtils.hasText(user.getEmail())) {
+        throw new SystemException(HttpCodeEnum.EMAIL_NOT_NULL);
+    }
+    if (!StringUtils.hasText(user.getNickName())) {
+        throw new SystemException(HttpCodeEnum.NICKNAME_NOT_NULL);
+    }
+    // 判断用户名、昵称和邮箱是否存在
+    if (userNameExist(user.getUserName())) {
+        throw new SystemException(HttpCodeEnum.USERNAME_EXIST);
+    }
+    if (nickNameExist(user.getNickName())) {
+        throw new SystemException(HttpCodeEnum.NICKNAME_EXIST);
+    }
+    if (emailExist(user.getEmail())) {
+        throw new SystemException(HttpCodeEnum.EMAIL_EXIST);
+    }
+    // 密码加密
+    String encodedPassword = passwordEncoder.encode(user.getPassword());
+    user.setPassword(encodedPassword);
+    save(user);
+    return ResponseResult.okResult();
+}
+```
+
+#### 遇到的问题
+
+​		前端的用户名传的不对，去前端改了一下就好了。
+
+### 日志记录 2.3
+
+#### 需求
+
+​		通过日志记录接口调用的信息。
+
+#### 实现
+
+​		使用AOP实现日志记录，实现解耦。
+
+​		日志格式为：
+
+```java
+log.info("=======Start=======");
+// 打印请求 URL
+log.info("URL            : {}",);
+// 打印描述信息
+log.info("BusinessName   : {}", );
+// 打印 Http method
+log.info("HTTP Method    : {}", );
+// 打印调用 controller 的全路径以及执行方法
+log.info("Class Method   : {}.{}", );
+// 打印请求的 IP
+log.info("IP             : {}",);
+// 打印请求入参
+log.info("Request Args   : {}",);
+// 打印出参
+log.info("Response       : {}", );
+// 结束后换行
+log.info("=======End=======" + System.lineSeparator());
+```
+
+​		定义一个SystemLog注解，用以实现通知。
+
+```java
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface SystemLog {
+    String businessName();
+}
+```
+
+​		定义切面类，使用`@Pointcut`注解标识切点，`@Around`注解实现通知方法。
+
+```java
+@Component
+@Aspect
+@Slf4j
+public class LogAspect {
+
+    // 切点
+    @Pointcut("@annotation(org.tseng.annotation.SystemLog)")
+    public void establishPointCut() {
+
+    }
+
+    // 通知方法
+    @Around("establishPointCut()")
+    public Object printLog(ProceedingJoinPoint joinPoint) throws Throwable {
+        Object proceed;
+        try {
+            handleBefore(joinPoint);
+            proceed = joinPoint.proceed();
+            handleAfter(proceed);
+        } finally {
+            // 结束换行
+            log.info("=======End=======" + System.lineSeparator());
+        }
+
+        return proceed;
+    }
+
+    private void handleBefore(ProceedingJoinPoint joinPoint) {
+
+        // 获取当前类的实现
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = requestAttributes.getRequest();
+
+        // 获取被切的方法对象
+        SystemLog systemLog = getSystemLog(joinPoint);
+
+        log.info("=======Start=======");
+        // 打印请求的URL
+        log.info("URL            : {}", request.getRequestURL());
+        // 打印描述信息
+        log.info("BusinessName   : {}", systemLog.businessName());
+        // 打印 Http method
+        log.info("HTTP Method    : {}", request.getMethod());
+        // 打印调用 controller 的全路径以及执行方法
+        log.info("Class Method   : {}.{}", joinPoint.getSignature().getDeclaringTypeName(), joinPoint.getSignature().getName());
+        // 打印请求的 IP
+        log.info("IP             : {}", request.getRemoteHost());
+        // 打印请求入参
+        log.info("Request Args   : {}", JSON.toJSONString(joinPoint.getArgs()));
+    }
+
+    private void handleAfter(Object proceed) {
+        // 打印出参
+        log.info("Response       : {}", JSON.toJSONString(proceed));
+    }
+
+    private SystemLog getSystemLog(ProceedingJoinPoint joinPoint) {
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+        return methodSignature.getMethod().getAnnotation(SystemLog.class);
+    }
+}
+```
+
+#### 遇到的问题
+
+​		无。
+
+### 浏览量 2.6
+
+#### 需求
+
+​		在用户浏览博文后实现其浏览量的增加。
+
+#### 实现
+
+​		文章的浏览量作为字段存储在article表中，每次应用启动时，将数据库中的字段存储到Redis中，用户访问文章后更新Redis的数据，设置定时将Redis中的数据同步到数据库中，这样做可以减少数据库的访问次数，在并发量大时减轻数据库的压力。
+
+​		文章的浏览量读取的是Redis中的数据。
+
+​		1.应用启动时将数据库字段存储到Redis中
+
+​		使用CommandLineRunner实现项目启动时操作，将整个文章表查询出来，将文章id与其对应的浏览量存进HashMap中，接着同步到Redis。
+
+```java
+@Component
+public class ViewCountRunner implements CommandLineRunner {
+
+    @Resource
+    private ArticleMapper articleMapper;
+
+    @Resource
+    private RedisCache redisCache;
+
+    @Override
+    public void run(String... args) throws Exception {
+        // 查询博文id与其浏览量
+        List<Article> articles = articleMapper.selectList(null);
+        Map<String, Integer> viewCountMap = new HashMap<>();
+        for (Article article : articles) {
+            viewCountMap.put(article.getId().toString(), article.getViewCount().intValue());
+        }
+        // 初始化同步到Redis
+        redisCache.setCacheMap(SystemConstants.REDIS_ARTICLE_VIEW_COUNT, viewCountMap);
+    }
+}
+```
+
+​		2.用户访问文章后更新Redis中的数据
+
+​		在工具类里面新增方法用以更新Redis，在ServiceImpl中调用。
+
+```java
+/**
+*  增加Hash中的数据
+*
+* @param key Redis键
+* @param hKey Hash键
+* @param value 值
+*/
+public void incrementCacheMapValue(final String key, final String hKey, final int value) {
+redisTemplate.opsForHash().increment(key, hKey, value);
+}
+```
+
+```java
+@Override
+public ResponseResult<?> updateViewCount(Long id) {
+    // 更新redis中的浏览量
+    redisCache.incrementCacheMapValue(SystemConstants.REDIS_ARTICLE_VIEW_COUNT, id.toString(), 1);
+    return ResponseResult.okResult();
+}
+```
+
+​		3.设置定时将Redis中的数据同步到数据库中
+
+​		用cron表达式设置定时为2分钟一次同步，将Redis中的数据取出并用LambdaUpdateWrapper更新数据库。
+
+```java
+@Scheduled(cron = "* 0/2 * * * ?")
+public void updateViewCount() {
+    // 获取Redis中的浏览量
+    Map<String, Integer> viewCountMap = redisCache.getCacheMap(SystemConstants.REDIS_ARTICLE_VIEW_COUNT);
+    List<Article> articles = viewCountMap.entrySet()
+        .stream()
+        .map(entry -> new Article(Long.valueOf(entry.getKey()), entry.getValue().longValue()))
+        .collect(Collectors.toList());
+    // 同步到数据库
+    for (Article article : articles) {
+        LambdaUpdateWrapper<Article> queryWrapper = new LambdaUpdateWrapper<>();
+        queryWrapper.eq(Article::getId, article.getId());
+        queryWrapper.set(Article::getViewCount, article.getViewCount());
+        articleService.update(queryWrapper);
+    }
+}
+```
+
+​		4.将读取访问量从数据库改为Redis
+
+​		将文章详情接口的方法加上从Redis读取浏览量就好了。
+
+```java
+@Override
+public ResponseResult<?> articleDetail(Long id) {
+    // 根据id查询文章
+    Article article = getById(id);
+    // 从Redis中获取浏览量
+    Integer viewCount = redisCache.getCacheMapValue(SystemConstants.REDIS_ARTICLE_VIEW_COUNT, id.toString());
+    article.setViewCount(viewCount.longValue());
+    // bean copy
+    ArticleDetailVo articleDetailVo = BeanCopyUtils.copyBean(article, ArticleDetailVo.class);
+    // 根据分类id查询分类名
+    Long categoryId = article.getCategoryId();
+    Category category = categoryService.getById(categoryId);
+    if (category != null) {
+        articleDetailVo.setCategoryName(category.getName());
+    }
+
+    // 封装返回
+    return ResponseResult.okResult(articleDetailVo);
+}
+```
+
+#### 遇到的问题
+
+​		将Redis的数据同步到数据库时直接写的`articleService.updateBatchById(articles);`，但是报了空指针的错误，发现是前端发起请求时update并不携带token，所以MyBatisPlus在`getAuthentication()`时捕获不到token，这里有两种解决办法，一种是对此进行判空操作，一种是循环检索更新数据库，这里选取的是第二种。
+
+### Swagger2文档 2.7
+
+​		编写文档配置类，并在各接口添加相应注解，生成Swagger文档。
+
+```java
+@Configuration
+public class SwaggerConfig {
+    @Bean
+    public Docket customDocket() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo())
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("org.tseng.controller"))
+                .build();
+    }
+
+    private ApiInfo apiInfo() {
+        Contact contact = new Contact("sh4llow", "https://github.com/sh4lloW", "songofapple@outlook.com");
+        return new ApiInfoBuilder()
+                .title("博客前台文档")
+                .description("博客前台")
+                .contact(contact)   // 联系方式
+                .version("1.1.0")  // 版本
+                .build();
+    }
+}
+```
+
+![img](https://raw.githubusercontent.com/sh4lloW/ImageHostingService/main/BlogImg/202302082343382.png)
+
+## 修改前端 2.8-2.9
+
+​		这两天改下前端，有点丑。
+
+## 管理系统 2.10
