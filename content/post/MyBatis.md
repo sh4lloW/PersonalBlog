@@ -6,6 +6,7 @@ categories:
 tags:
     - Web
     - 框架
+    - Mybatis
 draft: false
 ---
 &emsp;&emsp;MyBatis算是我接触的第一个框架，学习这个的过程有些漫长，认识到了xml这种以前见过但是不知道是什么的东西，也第一次看某样东西官方的文档，不管怎么样还是有所收获的。\
